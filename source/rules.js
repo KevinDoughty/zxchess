@@ -5,8 +5,7 @@
 
 //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 //{"B":{"0":4,"1":34,"2":67,"3":101,"4":134,"5":163,"6":194,"7":228,"16":257,"17":289,"18":321,"19":353,"20":385,"21":417,"22":449,"23":481,"96":529,"97":561,"98":593,"99":625,"100":657,"101":689,"102":721,"103":753,"112":788,"113":818,"114":851,"115":885,"116":918,"117":947,"118":978,"119":1012},
-//"p":0,"k":15,"e":0,"h":0,"z":0,"M":[],
-//"A":[[[16,17,18,19,20,21,22,23],[1,6],[2,5],[0,7],[3],[4]],[[96,97,98,99,100,101,102,103],[113,118],[114,117],[112,119],[115],[116]]],"D":[[0,0,0,0,0,0],[0,0,0,0,0,0]]};
+//"p":0,"k":15,"e":0,"h":0,"z":0,"M":[]}
 
 
 const ZX = {
@@ -92,8 +91,6 @@ const ZX = {
 		//console.log("=====> aa e:%s; k:%s; B:%s;",e,k,JSON.stringify(B));
 		for (f in B) {
 			var r = B[f], c = r>>4&1;
-			//console.log("f:%s; r:%s; c:%s;",f,r,c);
-			if (Number.isNaN(k) || typeof k !== "number") throw new Error("aa not a number k:"+k);
 			if (c === e && this.ia(f*1,k,P)) {
 				return 1;
 			}
@@ -112,9 +109,6 @@ const ZX = {
 	},
 
 	ia:function(f,t,P) { // is attacking (from, to, Position) // no more switch. speed is the same. this is shorter.
-		if (Number.isNaN(f) || typeof f !== "number") throw new Error("ia not a number f:"+f);
-		if (Number.isNaN(t) || typeof t !== "number") throw new Error("ia not a number t:"+t);
-		
 		var B=P.B, r=B[f], v=r&7;
 		//console.log("is attacking from:%s to:%s; value:%s;",f,t,v);
 		if (v===1) {// pawns. ep check not needed, for testing check.
@@ -126,8 +120,6 @@ const ZX = {
 	},
 
 	ig:function(f,t,P) { // is legal generic move
-		if (Number.isNaN(f) || typeof f !== "number") throw new Error("ig not a number f:"+f);
-		if (Number.isNaN(t) || typeof t !== "number") throw new Error("ig not a number t:"+t);
 		var B=P.B, r=B[f], v=r&7, a=t-f+128, d; // attackArrayIndex, delta
 		if ( !(t&0x88) && this.A[a]>>v&1 ) { // operator precedence?! // ((this.A[a]>>v)&1)
 			d=this.D[a];
