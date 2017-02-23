@@ -1,0 +1,39 @@
+{
+  "name": "zxchess",
+  "version": "0.0.1",
+  "description": "Chess with a funny prefix",
+  "main": "index.js",
+  "scripts": {
+    "build": "WEBPACK_ENV=build webpack",
+    "dev": "WEBPACK_ENV=dev webpack --progress --colors --watch",
+    "test": "mocha --compilers js:babel-core/register --colors --inline-diffs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KevinDoughty/zxchess.git"
+  },
+  "keywords": [
+    "chess",
+    "javascript",
+    "pgn",
+    "fen"
+  ],
+  "author": "Kevin Doughty",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/KevinDoughty/zxchess/issues"
+  },
+  "homepage": "https://github.com/KevinDoughty/zxchess#readme",
+  "devDependencies": {
+    "babel-core": "^6.22.1",
+    "babel-eslint": "^7.1.1",
+    "babel-jest": "^19.0.0",
+    "babel-loader": "^6.2.10",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.18.0",
+    "chai": "^3.5.0",
+    "jest": "^19.0.2",
+    "mocha": "^3.2.0",
+    "webpack": "^2.2.1"
+  }
+}
