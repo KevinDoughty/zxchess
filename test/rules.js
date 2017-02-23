@@ -26,26 +26,26 @@ const answerArray = [
 		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
 		48,
 		2039,
-		97862
+// 		97862
 	],
 	[
 		"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
 		14,
 		191,
 		2812,
-		43238
+// 		43238
 	],
 	[
 		"r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
 		46,
 		2079,
-		89890
+// 		89890
 	],
 	[
 		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
 		48,
 		2039,
-		97862
+// 		97862
 	],
 	[
 		"4k3/8/8/8/8/8/8/4K2R w K - 0 1",
@@ -59,20 +59,20 @@ const answerArray = [
 		26,
 		112,
 		3189,
-		17945
+// 		17945
 	],
 	[
 		"8/1n4N1/2k5/8/8/5K2/1N4n1/8 b - - 0 1",
 		15,
 		193,
 		2816,
-		40039
+// 		40039
 	],
 	[
 		"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
 		26,
 		568,
-		13744
+// 		13744
 	],
 
 	[//failing
@@ -106,23 +106,39 @@ const answerArray = [
 describe("Perft", function() {
 	this.timeout(Infinity);
 	this.slow(Infinity);
+// 	function everyPossiblePosition(position) {
+// 		const alive = position.A;
+// 		const result = [];
+// 		const squares = [];
+// 		alive.forEach( side => {
+// 			side.forEach( type => {
+// 				type.forEach( square => {
+// 					squares.push(square);
+// 					const moves = allLegal(square,position);
+// 					moves.forEach( move => {
+// 						const next = isLegal(square,move,position); // There is a way to do this without the redundant check
+// 						if (!next) throw new Error("not a legal move ?!");
+// 						result.push(next);
+// 					});
+// 				});
+// 			});
+// 		});
+// 		return result;
+// 	}
 	function everyPossiblePosition(position) {
-		const alive = position.A;
+		const board = position.B;
 		const result = [];
 		const squares = [];
-		alive.forEach( side => {
-			side.forEach( type => {
-				type.forEach( square => {
-					squares.push(square);
-					const moves = allLegal(square,position);
-					moves.forEach( move => {
-						const next = isLegal(square,move,position); // There is a way to do this without the redundant check
-						if (!next) throw new Error("not a legal move ?!");
-						result.push(next);
-					});
-				});
+		for (let f in board) {
+			squares.push(f*1);
+			const moves = allLegal(f*1,position);
+			moves.forEach( move => {
+				const next = isLegal(f*1,move,position); // There is a way to do this without the redundant check
+				if (!next) throw new Error("not a legal move ?!");
+				result.push(next);
 			});
-		});
+
+		}
 		return result;
 	}
 	answerArray.forEach( function(answer) {

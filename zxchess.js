@@ -117,8 +117,111 @@
         /******/
         // Load entry module and return exports
         /******/
-        return __webpack_require__(__webpack_require__.s = 2);
+        return __webpack_require__(__webpack_require__.s = 0);
     }([ /* 0 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {
+            value: true
+        });
+        var _rules = __webpack_require__(2);
+        Object.keys(_rules).forEach(function(key) {
+            if (key === "default" || key === "__esModule") return;
+            Object.defineProperty(exports, key, {
+                enumerable: true,
+                get: function get() {
+                    return _rules[key];
+                }
+            });
+        });
+        var _game = __webpack_require__(1);
+        Object.keys(_game).forEach(function(key) {
+            if (key === "default" || key === "__esModule") return;
+            Object.defineProperty(exports, key, {
+                enumerable: true,
+                get: function get() {
+                    return _game[key];
+                }
+            });
+        });
+        var position = (0, _game.fen)("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        console.log("position:%s;", JSON.stringify(position));
+        var from = (0, _game.ucv)("e2");
+        var to = (0, _game.ucv)("e4");
+        var ok = (0, _rules.isLegal)(from, to, position);
+        console.log("from:%s;", from);
+        console.log("to:%s;", to);
+        console.log("isLegal:%s;", JSON.stringify(ok));
+        var all = (0, _rules.allLegal)(from, position);
+        console.log("allLegal:%s;", JSON.stringify(all));
+        // https://chessprogramming.wikispaces.com/Perft+Results
+        // https://raw.githubusercontent.com/serberoth/chess/master/perfsuite.epd
+        var answerArray = [ // 	[
+        // 		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        // 		20, // 1
+        // 		400, // 2
+        // 		8902, // 3
+        // // // 		197281, // 4
+        // // // 		4865609, // 5
+        // // // 		119060324, // 6
+        // // // 		3195901860, // 7
+        // // // 		84998978956, // 8
+        // // // 		2439530234167, // 9
+        // // // 		69352859712417, // 10
+        // // // 		2097651003696806, // 11
+        // // // 		62854969236701747, // 12
+        // // // 		1981066775000396239, // 13
+        // 	],
+        [ "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 48, 2039 ], [ "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", 14, 191, 2812 ], [ "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", 46, 2079 ], [ "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 48, 2039 ], [ "4k3/8/8/8/8/8/8/4K2R w K - 0 1", 15, 66, 1197, 7059 ], [ "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", 26, 112, 3189 ], [ "8/1n4N1/2k5/8/8/5K2/1N4n1/8 b - - 0 1", 15, 193, 2816 ], [ "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", 26, 568 ] ];
+        function everyPossiblePosition(position) {
+            var alive = position.A;
+            var result = [];
+            var squares = [];
+            alive.forEach(function(side) {
+                side.forEach(function(type) {
+                    type.forEach(function(square) {
+                        squares.push(square);
+                        var moves = (0, _rules.allLegal)(square, position);
+                        moves.forEach(function(move) {
+                            var next = (0, _rules.isLegal)(square, move, position);
+                            // There is a way to do this without the redundant check
+                            if (!next) throw new Error("not a legal move ?!");
+                            result.push(next);
+                        });
+                    });
+                });
+            });
+            return result;
+        }
+        answerArray.forEach(function(answer) {
+            var fenString = answer[0];
+            var array = [];
+            array.push((0, _game.fen)(fenString));
+            var depth = answer.length - 1;
+            var _loop = function _loop(i) {
+                var result = [];
+                array.forEach(function(position) {
+                    var every = everyPossiblePosition.call(null, position);
+                    result = result.concat(every);
+                });
+                array = result.slice(0);
+                //assert.equal(result.length, answer[i+1]);
+                if (result.length !== answer[i + 1]) {
+                    var error = new Error();
+                    var message = "depth:" + (i + 1) + "; expected:" + answer[i + 1] + "; actual:" + result.length + ";";
+                    error.message = message;
+                    error.showDiff = false;
+                    throw error;
+                } else {
+                    console.log("%s %s", i + 1, fenString);
+                }
+            };
+            for (var i = 0; i < depth; i++) {
+                _loop(i);
+            }
+        });
+    }, /* 1 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -481,7 +584,7 @@
         };
         var cv = exports.cv = Game.cv;
         var ucv = exports.ucv = Game.ucv;
-    }, /* 1 */
+    }, /* 2 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -572,7 +675,7 @@
                 // Board style
                 for (f in B) {
                     var r = B[f], C = r >> 4 & 1, v = r & 7;
-                    if (C === c && v === 6) return f;
+                    if (C === c && v === 6) return f * 1;
                 }
             },
             cc: function cc(C, t, B, p) {
@@ -596,29 +699,38 @@
   		}
   		// return false implied
   */
-                // scan board style, but might cause unterminated?
+                // scan board style, but might cause unterminated? Or serious need for optimization
                 var B = P.B, f;
                 //console.log("=====> aa e:%s; k:%s; B:%s;",e,k,JSON.stringify(B));
                 for (f in B) {
                     var r = B[f], c = r >> 4 & 1;
                     //console.log("f:%s; r:%s; c:%s;",f,r,c);
-                    if (c === e && this.ia(f, k, P)) return 1;
+                    if (Number.isNaN(k) || typeof k !== "number") throw new Error("aa not a number k:" + k);
+                    if (c === e && this.ia(f * 1, k, P)) {
+                        console.log("!!!");
+                        return 1;
+                    }
                 }
             },
             ia: function ia(f, t, P) {
                 // is attacking (from, to, Position) // no more switch. speed is the same. this is shorter.
+                if (Number.isNaN(f) || typeof f !== "number") throw new Error("ia not a number f:" + f);
+                if (Number.isNaN(t) || typeof t !== "number") throw new Error("ia not a number t:" + t);
                 var B = P.B, r = B[f], v = r & 7;
-                if (v == 1) {
+                //console.log("is attacking from:%s to:%s; value:%s;",f,t,v);
+                if (v === 1) {
                     // pawns. ep check not needed, for testing check.
                     var M = this.M[r >> 4 & 1];
-                    return t == f + M[2] || t == f + M[3];
+                    return t === f + M[2] || t === f + M[3];
                 }
-                if (v == 6) return !(t & 136) && this.A[t - f + 128] >> v & 1;
+                if (v === 6) return !(t & 136) && this.A[t - f + 128] >> v & 1;
                 // operator precedence ?! // (this.A[t-f+128]>>v)&1
                 return this.ig(f, t, P);
             },
             ig: function ig(f, t, P) {
                 // is legal generic move
+                if (Number.isNaN(f) || typeof f !== "number") throw new Error("ig not a number f:" + f);
+                if (Number.isNaN(t) || typeof t !== "number") throw new Error("ig not a number t:" + t);
                 var B = P.B, r = B[f], v = r & 7, a = t - f + 128, d;
                 // attackArrayIndex, delta
                 if (!(t & 136) && this.A[a] >> v & 1) {
@@ -626,6 +738,7 @@
                     d = this.D[a];
                     f += d;
                     if (f != t) do {
+                        //console.log("ig f:%s; t:%s; d:%s;",f,t,d);
                         if (B[f]) return;
                         f += d;
                     } while (f != t);
@@ -662,8 +775,8 @@
                 // Boardarray, h=turn, rawpiece, A=alive pieces, current pieces, M=all moves
                 for (f in B) {
                     var r = B[f], c = r >> 4 & 1;
-                    if (c === h) {
-                        var M = this.al(f, P);
+                    if (c !== h) {
+                        var M = this.al(f * 1, P);
                         if (M.length) return 1;
                     }
                 }
@@ -785,20 +898,8 @@
                 //console.log('set1 P.D:'+P.D+'; new D:'+D+';');
                 //var A = [this.zxq(P.A[0]),this.zxq(P.A[1])];
                 //var D = [this.zxa(P.D[0]),this.zxa(P.D[1])];
-                var debug = A[c][v - 1];
-                debug.forEach(function(item) {
-                    // debug
-                    if (item === null || typeof item === "undefined") console.log("pre initial:%s;", JSON.stringify(debug));
-                });
-                // debug
-                var test = this.zxm(f, A[c][v - 1], t);
+                this.zxm(f, A[c][v - 1], t);
                 // move piece in piece array ... (contains piece locations)
-                var debug = A[c][v - 1];
-                debug.forEach(function(item) {
-                    // debug
-                    if (item === null || typeof item === "undefined" || test) console.log("post initial:%s;", JSON.stringify(debug));
-                });
-                // debug
                 if (d) {
                     // dead piece at "to" square, direct hit not en passant
                     //M[1]=[t,-1,d]; // add to move array // from, to, value
@@ -808,24 +909,8 @@
                     // dead piece value (shifted for array)
                     if (d & 8) D[i][0]++; else D[i][j]++;
                     // else ++ dead piece
-                    var debug = A[i][j];
-                    debug.forEach(function(item) {
-                        // debug
-                        if (item === null || typeof item === "undefined" || test) console.log("pre dead:%s;", JSON.stringify(debug));
-                    });
-                    // debug
-                    var test = this.zxm(t, A[i][j]);
+                    this.zxm(t, A[i][j]);
                     // remove dead piece from piece array
-                    var debug = A[i][j];
-                    debug.forEach(function(item) {
-                        // debug
-                        if (item === null || typeof item === "undefined" || test) {
-                            console.log("post dead:%s;", JSON.stringify(debug));
-                            // debug
-                            console.log("color:%s; value:%s; from:%s; to:%s;", i, j, f, t);
-                        }
-                    });
-                    // debug
                     h = 0;
                 }
                 B[t] = B[f];
@@ -846,19 +931,7 @@
                         //M[1] = [j,-1,B[j]]; //  from,to,value // add enPassant to move arrray
                         delete B[j];
                         // delete from current board
-                        var debug = A[c ^ 1][0];
-                        debug.forEach(function(item) {
-                            // debug
-                            if (item === null || typeof item === "undefined") console.log("pre pawn:%s;", JSON.stringify(debug));
-                        });
-                        // debug
-                        var test = this.zxm(j, A[c ^ 1][0]);
-                        // delete from Alive array
-                        var debug = A[c ^ 1][0];
-                        debug.forEach(function(item) {
-                            // debug
-                            if (item === null || typeof item === "undefined" || test) console.log("post pawn:%s;", JSON.stringify(debug));
-                        });
+                        this.zxm(j, A[c ^ 1][0]);
                     }
                     break;
 
@@ -898,35 +971,8 @@
                         //M[1] = [i,j];//,B[j]]; // from,to (rook)
                         //console.log('castle move rook')
                         //console.log('castle move rook f:'+f+'; t:'+t+'; A:'+A+'; i:'+i+'; j:'+j+'; A[c][3]:'+A[c][3]+';');
-                        var debug = A[c][3];
-                        if (debug.indexOf(i) < 0) {
-                            console.log("not there:%s;", JSON.stringify(debug));
-                            console.log("c:%s; i:%s; j:%s;", c, i, j);
-                            console.log("Board:%s;", JSON.stringify(B));
-                            console.log("Pieces:%s;", JSON.stringify(A));
-                            var rrr = B[i], ccc = rrr >> 4 & 1, vvv = rrr & 7;
-                            console.log("verify r:%s; c:%s; v:%s;", rrr, ccc, vvv);
-                        }
-                        debug.forEach(function(item) {
-                            // debug
-                            if (item === null || typeof item === "undefined") console.log("pre king:%s;", JSON.stringify(debug));
-                        });
-                        // debug
-                        var test = this.zxm(i, A[c][3], j);
+                        this.zxm(i, A[c][3], j);
                         // move rook in alive pieces array
-                        //console.log('end castle move rook')
-                        var debug = A[c][3];
-                        debug.forEach(function(item) {
-                            // debug
-                            if (item === null || typeof item === "undefined" || test) {
-                                console.log("post king:%s;", JSON.stringify(debug));
-                                // debug
-                                console.log("c:%s; i:%s; j:%s;", c, i, j);
-                                console.log("Board:%s;", JSON.stringify(B));
-                                console.log("Pieces:%s;", JSON.stringify(A));
-                            }
-                        });
-                        // debug
                         B[j] = B[i];
                         delete B[i];
                     }
@@ -981,7 +1027,7 @@
             // 414 calls, 15.1%, 124.664ms
             // new:
             // 414 calls, 12.8%, 67.82ms
-            zxm: function zxm(n, h, l, debug) {
+            zxm: function zxm(n, h, l) {
                 // zx piece array move // needle, haystack, [new value (piece location)] // deletes at index or inserts optional new value
                 //console.log("zxm h:"+h+';')
                 if (!Array.isArray(h)) throw new Error("this is not an array:" + h);
@@ -1010,42 +1056,5 @@
         var allLegal = exports.allLegal = function allLegal(from, position) {
             return ZX.al(from, position);
         };
-    }, /* 2 */
-    /***/
-    function(module, exports, __webpack_require__) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        var _rules = __webpack_require__(1);
-        Object.keys(_rules).forEach(function(key) {
-            if (key === "default" || key === "__esModule") return;
-            Object.defineProperty(exports, key, {
-                enumerable: true,
-                get: function get() {
-                    return _rules[key];
-                }
-            });
-        });
-        var _game = __webpack_require__(0);
-        Object.keys(_game).forEach(function(key) {
-            if (key === "default" || key === "__esModule") return;
-            Object.defineProperty(exports, key, {
-                enumerable: true,
-                get: function get() {
-                    return _game[key];
-                }
-            });
-        });
-        var position = (0, _game.fen)("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        console.log("position:%s;", JSON.stringify(position));
-        var from = (0, _game.ucv)("e2");
-        var to = (0, _game.ucv)("e4");
-        var ok = (0, _rules.isLegal)(from, to, position);
-        console.log("from:%s;", from);
-        console.log("to:%s;", to);
-        console.log("isLegal:%s;", JSON.stringify(ok));
-        var all = (0, _rules.allLegal)(from, position);
-        console.log("allLegal:%s;", JSON.stringify(all));
     } ]);
 });

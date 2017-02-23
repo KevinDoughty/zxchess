@@ -77,7 +77,7 @@ const ZX = {
 		var B = P.B, f; // Board style
 		for (f in B) {
 			var r=B[f], C=r>>4&1, v=r&7;
-			if (C === c && v === 6) return f;
+			if (C === c && v === 6) return f*1;
 		}
 	},
 	cc:function(C,t,B,p) { // check color (color,to,Board,ispawn)
@@ -86,56 +86,54 @@ const ZX = {
 		return !p
 	},
 	aa:function(e,k,P) { // any piece is attacking(enemycolor,kingloc,Position)
-/*
-		// scan board style:
-		var B=P.B,f,j,i=8,r;
-		while (i--) {
-			j=8;
-			while (j--) {
-				f= i*16+j;
-				r=B[f];
-				if (r && r>>4&1==c && this.ia(f,t,P)) return 1;
+
+		// scan board style, but might cause unterminated? Or serious need for optimization
+		var B=P.B,f;
+		//console.log("=====> aa e:%s; k:%s; B:%s;",e,k,JSON.stringify(B));
+		for (f in B) {
+			var r = B[f], c = r>>4&1;
+			//console.log("f:%s; r:%s; c:%s;",f,r,c);
+			if (Number.isNaN(k) || typeof k !== "number") throw new Error("aa not a number k:"+k);
+			if (c === e && this.ia(f*1,k,P)) {
+				return 1;
 			}
 		}
-		// return false implied
-*/
-		// scan board style, but might cause unterminated? Or serious need for optimization
-// 		var B=P.B,f;
-// 		//console.log("=====> aa e:%s; k:%s; B:%s;",e,k,JSON.stringify(B));
-// 		for (f in B) {
-// 			var r = B[f], c = r >> 4&1;
-// 			//console.log("f:%s; r:%s; c:%s;",f,r,c);
-// 			if (c === e && this.ia(f,k,P)) return 1;
-// 		}
 
 		//scan Alive array style:
-		var A=P.A[e],i=A.length,p,j;
-		while (i--) {
-			p=A[i];
-			j=p.length;
-			while (j--) {
-				if (this.ia(p[j],k,P)) return 1
-			}
-		}
+// 		var A=P.A[e],i=A.length,p,j;
+// 		while (i--) {
+// 			p=A[i];
+// 			j=p.length;
+// 			while (j--) {
+// 				if (this.ia(p[j],k,P)) return 1
+// 			}
+// 		}
 		// return false implied
 	},
 
 	ia:function(f,t,P) { // is attacking (from, to, Position) // no more switch. speed is the same. this is shorter.
+		if (Number.isNaN(f) || typeof f !== "number") throw new Error("ia not a number f:"+f);
+		if (Number.isNaN(t) || typeof t !== "number") throw new Error("ia not a number t:"+t);
+		
 		var B=P.B, r=B[f], v=r&7;
-		if (v==1) {// pawns. ep check not needed, for testing check.
+		//console.log("is attacking from:%s to:%s; value:%s;",f,t,v);
+		if (v===1) {// pawns. ep check not needed, for testing check.
 				var M=this.M[r>>4&1];
-				return (t==f+M[2] || t==f+M[3]); // is 0x88 check needed here? I don't think so.
+				return (t===f+M[2] || t===f+M[3]); // is 0x88 check needed here? I don't think so.
 		}
-		if (v==6) return !(t&0x88) && this.A[t-f+128]>>v&1 // operator precedence ?! // (this.A[t-f+128]>>v)&1
+		if (v===6) return !(t&0x88) && this.A[t-f+128]>>v&1 // operator precedence ?! // (this.A[t-f+128]>>v)&1
 		return this.ig(f,t,P) // doesn't need checkcolor in is legal generic move, but whatever...
 	},
 
 	ig:function(f,t,P) { // is legal generic move
+		if (Number.isNaN(f) || typeof f !== "number") throw new Error("ig not a number f:"+f);
+		if (Number.isNaN(t) || typeof t !== "number") throw new Error("ig not a number t:"+t);
 		var B=P.B, r=B[f], v=r&7, a=t-f+128, d; // attackArrayIndex, delta
 		if ( !(t&0x88) && this.A[a]>>v&1 ) { // operator precedence?! // ((this.A[a]>>v)&1)
 			d=this.D[a];
 			f+=d;
 			if (f!=t) do {
+				//console.log("ig f:%s; t:%s; d:%s;",f,t,d);
 				if (B[f]) return;
 				f+=d
 			} while (f!=t);
@@ -172,7 +170,7 @@ const ZX = {
 		for (f in B) {
 			var r = B[f], c = r>>4&1;
 			if (c !== h) {
-				var M = this.al(f,P);
+				var M = this.al(f*1,P);
 				if (M.length) return 1;
 			}
 		}
@@ -286,51 +284,35 @@ const ZX = {
 		//console.log('A:'+P.A+';')
 		//console.log('D:'+P.D+';')
 		//var i,j, h = P.h+1, k = P.k, e = 0, B = new ZX.OC(P.B), r = B[f], c = r>>4&1, v = r&7, M = [[f,t]], d=B[t], A= this.zxa(P.A), D= this.zxa(P.D),p=P.p+1;
-		var i,j, h = P.h+1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], A= this.Ac(P.A), D= this.Dc(P.D),p=P.p+1;
+		var i,j, h = P.h+1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], p=P.p+1;//, A= this.Ac(P.A), D= this.Dc(P.D);
 		//console.log('A[%s]:%s; v-1:%s;',c,A[c],v-1);
 		//console.log('A:'+A+';')
 		// position: {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]],m,s}
-		if (A[c] === null || A[c] === undefined) {
-			console.log('damn.');
-		}
+// 		if (A[c] === null || A[c] === undefined) {
+// 			console.log('damn.');
+// 		}
 		//console.log('set1 P.A:'+P.A+'; new A:'+A+';');
 		//console.log('set1 P.D:'+P.D+'; new D:'+D+';');
 		//var A = [this.zxq(P.A[0]),this.zxq(P.A[1])];
 		//var D = [this.zxa(P.D[0]),this.zxa(P.D[1])];
 		
-		var debug = A[c][v-1];
-		debug.forEach( function(item) { // debug
-			if (item === null || typeof item === "undefined") console.log("pre initial:%s;",JSON.stringify(debug)); // debug
-		}); // debug
+
 		
-		var test = this.zxm(f,A[c][v-1],t); // move piece in piece array ... (contains piece locations)
+		//this.zxm(f,A[c][v-1],t); // move piece in piece array ... (contains piece locations)
 		
-		var debug = A[c][v-1];
-		debug.forEach( function(item) { // debug
-			if (item === null || typeof item === "undefined" || test) console.log("post initial:%s;",JSON.stringify(debug)); // debug
-		}); // debug
+
 
 		if (d) { // dead piece at "to" square, direct hit not en passant
 			//M[1]=[t,-1,d]; // add to move array // from, to, value
 			i = c^1; // dead piece color // same as d>>4&1
 			j = (d&7)-1; // dead piece value (shifted for array)
-			if (d&8) D[i][0]++; // if promoted pawn then ++ dead pawn
-			else D[i][j]++; // else ++ dead piece
+			//if (d&8) D[i][0]++; // if promoted pawn then ++ dead pawn
+			//else D[i][j]++; // else ++ dead piece
 			
-			var debug = A[i][j];
-			debug.forEach( function(item) { // debug
-				if (item === null || typeof item === "undefined" || test) console.log("pre dead:%s;",JSON.stringify(debug)); // debug
-			}); // debug
 			
-			var test = this.zxm(t,A[i][j]); // remove dead piece from piece array
+			//this.zxm(t,A[i][j]); // remove dead piece from piece array
 			
-			var debug = A[i][j];
-			debug.forEach( function(item) { // debug
-				if (item === null || typeof item === "undefined" || test) {
-					console.log("post dead:%s;",JSON.stringify(debug)); // debug
-					console.log("color:%s; value:%s; from:%s; to:%s;",i,j,f,t);
-				}
-			}); // debug
+
 			
 			h=0; // reset 50 move count
 		}
@@ -348,17 +330,8 @@ const ZX = {
 					//M[1] = [j,-1,B[j]]; //  from,to,value // add enPassant to move arrray
 					delete B[j] // delete from current board
 					
-					var debug = A[c^1][0]
-					debug.forEach( function(item) { // debug
-						if (item === null || typeof item === "undefined") console.log("pre pawn:%s;",JSON.stringify(debug)); // debug
-					}); // debug
+					//this.zxm(j,A[c^1][0]); // delete from Alive array
 					
-					var test = this.zxm(j,A[c^1][0]); // delete from Alive array
-					
-					var debug = A[c^1][0]
-					debug.forEach( function(item) { // debug
-						if (item === null || typeof item === "undefined" || test) console.log("post pawn:%s;",JSON.stringify(debug)); // debug
-					}); // debug
 				}
 				break;
 		
@@ -387,32 +360,7 @@ const ZX = {
 					//M[1] = [i,j];//,B[j]]; // from,to (rook)
 					//console.log('castle move rook')
 					//console.log('castle move rook f:'+f+'; t:'+t+'; A:'+A+'; i:'+i+'; j:'+j+'; A[c][3]:'+A[c][3]+';');
-					var debug = A[c][3];
-					if (debug.indexOf(i) < 0) {
-						console.log("not there:%s;",JSON.stringify(debug));
-						console.log("c:%s; i:%s; j:%s;",c,i,j);
-						console.log("Board:%s;",JSON.stringify(B));
-						console.log("Pieces:%s;",JSON.stringify(A));
-						var rrr = B[i], ccc = rrr>>4&1, vvv = rrr&7; 
-						console.log("verify r:%s; c:%s; v:%s;",rrr,ccc,vvv);
-					}
-					debug.forEach( function(item) { // debug
-						if (item === null || typeof item === "undefined") console.log("pre king:%s;",JSON.stringify(debug)); // debug
-					}); // debug
-					
-					var test = this.zxm(i,A[c][3],j); // move rook in alive pieces array
-					
-					//console.log('end castle move rook')
-					var debug = A[c][3];
-					debug.forEach( function(item) { // debug
-						if (item === null || typeof item === "undefined" || test) {
-							console.log("post king:%s;",JSON.stringify(debug)); // debug
-							console.log("c:%s; i:%s; j:%s;",c,i,j);
-							console.log("Board:%s;",JSON.stringify(B));
-							console.log("Pieces:%s;",JSON.stringify(A));
-						}
-					}); // debug
-					
+					//this.zxm(i,A[c][3],j); // move rook in alive pieces array
 					B[j] = B[i];
 					delete B[i]
 				}
@@ -427,51 +375,49 @@ const ZX = {
 	// Board,ply,kingcastling,enpassanttargetsquare,halfmove(fiftymove)count,zobrist,Alive,Dead
 
 		//return {B:B,p:p,k:k,e:e,h:h,z:z,M:M,A:A,D:D}
-		return {B:B,p:p,k:k,e:e,h:h,z:zo,A:A,D:D}
+		return {B:B,p:p,k:k,e:e,h:h,z:zo};//,A:A,D:D}
 	},
-	Ac:function(W) { // copy the Alive array // belongs in chess because it's specific.
-		var i=2,n,o,j,M=[[],[]];//M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
-		while (i--) { // colors 0,1
-			n=M[i];
-			o=W[i];
-			j=6;
-			while (j--) { // pieces
-				n[j]=o[j].slice();
-			}
-		}
-		return M;
-	},
-	// 414 calls, 5.01%, 41.359ms
-	Dc:function(W) { // copy the Dead array // belongs in chess because it's specific.
-		var M=[];//M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
-		//while (i--) { // colors 0,1
-			M[0]=W[0].slice();
-			M[1]=W[1].slice();
-		//}
-		return M;
-	},
-	// original was:
-	// 414 calls, 15.1%, 124.664ms
-
-	// new:
-	// 414 calls, 12.8%, 67.82ms
-	zxm:function(n,h,l,debug) { // zx piece array move // needle, haystack, [new value (piece location)] // deletes at index or inserts optional new value
-		//console.log("zxm h:"+h+';')
-		if (!Array.isArray(h)) throw new Error("this is not an array:"+h);
-		var i = h.length;
-		while (i--) {
-			if (h[i]===n) {
-				if (typeof l === "undefined" || l === null) h.splice(i,1);
-				else h.splice(i,1,l);
-				return;
-			}
-		}
-		
-		console.log("zxm piece:%s; not found in:%s; insert:%s;",n,JSON.stringify(h),l);
-		return true;
-	},
-
-
+// 	Ac:function(W) { // copy the Alive array // belongs in chess because it's specific.
+// 		var i=2,n,o,j,M=[[],[]];//M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
+// 		while (i--) { // colors 0,1
+// 			n=M[i];
+// 			o=W[i];
+// 			j=6;
+// 			while (j--) { // pieces
+// 				n[j]=o[j].slice();
+// 			}
+// 		}
+// 		return M;
+// 	},
+// 	// 414 calls, 5.01%, 41.359ms
+// 	Dc:function(W) { // copy the Dead array // belongs in chess because it's specific.
+// 		var M=[];//M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
+// 		//while (i--) { // colors 0,1
+// 			M[0]=W[0].slice();
+// 			M[1]=W[1].slice();
+// 		//}
+// 		return M;
+// 	},
+// 	// original was:
+// 	// 414 calls, 15.1%, 124.664ms
+// 
+// 	// new:
+// 	// 414 calls, 12.8%, 67.82ms
+// 	zxm:function(n,h,l) { // zx piece array move // needle, haystack, [new value (piece location)] // deletes at index or inserts optional new value
+// 		//console.log("zxm h:"+h+';')
+// 		if (!Array.isArray(h)) throw new Error("this is not an array:"+h);
+// 		var i = h.length;
+// 		while (i--) {
+// 			if (h[i]===n) {
+// 				if (typeof l === "undefined" || l === null) h.splice(i,1);
+// 				else h.splice(i,1,l);
+// 				return;
+// 			}
+// 		}
+// 		
+// 		console.log("zxm piece:%s; not found in:%s; insert:%s;",n,JSON.stringify(h),l);
+// 		return true;
+// 	},
 
 	Bc:function(w) { // board copy // this doesn't include generic object functions, does it?
 		var i,O={};
