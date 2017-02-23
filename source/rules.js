@@ -24,9 +24,11 @@ const ZX = {
 	// first two intentionally left blank. move directions for piece value. there is no piece 0 and piece 1 is pawn, not used... but I could perhaps. color * value for pawn would make 0 for white, 1 for black, but still, too much specific logic required, like first move double push, en passant, takes legal, etc.
 	M:[ [1,16,15,17] , [6,-16,-17,-15] , [18, 33, 31, 14, -31, -33, -18, -14], [-15,-17,15,17], [-1,-16,1,16], [-15,-17,15,17,-1,-16,1,16] ],
 	il: function(f,t,P) { // is legal move (z=object,from, to, Position)
+		//console.log('is legal? f:'+f+'; t:'+t+'; P:'+P+';');
 		var c,p = P.p, h=p&1, B=P.B,r=B[f]; //color,ply,h=turn,Board,rawpiece
 		if (r) { // if piece exists at that square
 			c = r>>4&1;
+			//console.log('is legal turn:'+h+'; color:'+c+'; rawpiece:'+r+'; ply:'+p+';');
 			if (c == h && this.ip(f,t,P)) {
 				return this.cl(f,t,P); // return NEW POSITION !!!
 			}
@@ -284,14 +286,13 @@ const ZX = {
 		//console.log('A:'+P.A+';')
 		//console.log('D:'+P.D+';')
 		//var i,j, h = P.h+1, k = P.k, e = 0, B = new ZX.OC(P.B), r = B[f], c = r>>4&1, v = r&7, M = [[f,t]], d=B[t], A= this.zxa(P.A), D= this.zxa(P.D),p=P.p+1;
-		//var i,j, h = P.h+1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], A= this.Ac(P.A), D= this.Dc(P.D),p=P.p+1;
-		var i,j, h = P.h+1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], p=P.p+1;
+		var i,j, h = P.h+1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], A= this.Ac(P.A), D= this.Dc(P.D),p=P.p+1;
 		//console.log('A[%s]:%s; v-1:%s;',c,A[c],v-1);
 		//console.log('A:'+A+';')
 		// position: {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]],m,s}
-// 		if (A[c] === null || A[c] === undefined) {
-// 			console.log('damn.');
-// 		}
+		if (A[c] === null || A[c] === undefined) {
+			console.log('damn.');
+		}
 		//console.log('set1 P.A:'+P.A+'; new A:'+A+';');
 		//console.log('set1 P.D:'+P.D+'; new D:'+D+';');
 		//var A = [this.zxq(P.A[0]),this.zxq(P.A[1])];
