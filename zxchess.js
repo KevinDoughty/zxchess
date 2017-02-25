@@ -117,111 +117,8 @@
         /******/
         // Load entry module and return exports
         /******/
-        return __webpack_require__(__webpack_require__.s = 0);
+        return __webpack_require__(__webpack_require__.s = 3);
     }([ /* 0 */
-    /***/
-    function(module, exports, __webpack_require__) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", {
-            value: true
-        });
-        var _rules = __webpack_require__(2);
-        Object.keys(_rules).forEach(function(key) {
-            if (key === "default" || key === "__esModule") return;
-            Object.defineProperty(exports, key, {
-                enumerable: true,
-                get: function get() {
-                    return _rules[key];
-                }
-            });
-        });
-        var _game = __webpack_require__(1);
-        Object.keys(_game).forEach(function(key) {
-            if (key === "default" || key === "__esModule") return;
-            Object.defineProperty(exports, key, {
-                enumerable: true,
-                get: function get() {
-                    return _game[key];
-                }
-            });
-        });
-        var position = (0, _game.fen)("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        console.log("position:%s;", JSON.stringify(position));
-        var from = (0, _game.ucv)("e2");
-        var to = (0, _game.ucv)("e4");
-        var ok = (0, _rules.isLegal)(from, to, position);
-        console.log("from:%s;", from);
-        console.log("to:%s;", to);
-        console.log("isLegal:%s;", JSON.stringify(ok));
-        var all = (0, _rules.allLegal)(from, position);
-        console.log("allLegal:%s;", JSON.stringify(all));
-        // https://chessprogramming.wikispaces.com/Perft+Results
-        // https://raw.githubusercontent.com/serberoth/chess/master/perfsuite.epd
-        var answerArray = [ // 	[
-        // 		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-        // 		20, // 1
-        // 		400, // 2
-        // 		8902, // 3
-        // // // 		197281, // 4
-        // // // 		4865609, // 5
-        // // // 		119060324, // 6
-        // // // 		3195901860, // 7
-        // // // 		84998978956, // 8
-        // // // 		2439530234167, // 9
-        // // // 		69352859712417, // 10
-        // // // 		2097651003696806, // 11
-        // // // 		62854969236701747, // 12
-        // // // 		1981066775000396239, // 13
-        // 	],
-        [ "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 48, 2039 ], [ "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1", 14, 191, 2812 ], [ "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10", 46, 2079 ], [ "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 48, 2039 ], [ "4k3/8/8/8/8/8/8/4K2R w K - 0 1", 15, 66, 1197, 7059 ], [ "4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1", 26, 112, 3189 ], [ "8/1n4N1/2k5/8/8/5K2/1N4n1/8 b - - 0 1", 15, 193, 2816 ], [ "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1", 26, 568 ] ];
-        function everyPossiblePosition(position) {
-            var alive = position.A;
-            var result = [];
-            var squares = [];
-            alive.forEach(function(side) {
-                side.forEach(function(type) {
-                    type.forEach(function(square) {
-                        squares.push(square);
-                        var moves = (0, _rules.allLegal)(square, position);
-                        moves.forEach(function(move) {
-                            var next = (0, _rules.isLegal)(square, move, position);
-                            // There is a way to do this without the redundant check
-                            if (!next) throw new Error("not a legal move ?!");
-                            result.push(next);
-                        });
-                    });
-                });
-            });
-            return result;
-        }
-        answerArray.forEach(function(answer) {
-            var fenString = answer[0];
-            var array = [];
-            array.push((0, _game.fen)(fenString));
-            var depth = answer.length - 1;
-            var _loop = function _loop(i) {
-                var result = [];
-                array.forEach(function(position) {
-                    var every = everyPossiblePosition.call(null, position);
-                    result = result.concat(every);
-                });
-                array = result.slice(0);
-                //assert.equal(result.length, answer[i+1]);
-                if (result.length !== answer[i + 1]) {
-                    var error = new Error();
-                    var message = "depth:" + (i + 1) + "; expected:" + answer[i + 1] + "; actual:" + result.length + ";";
-                    error.message = message;
-                    error.showDiff = false;
-                    throw error;
-                } else {
-                    console.log("%s %s", i + 1, fenString);
-                }
-            };
-            for (var i = 0; i < depth; i++) {
-                _loop(i);
-            }
-        });
-    }, /* 1 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -381,6 +278,7 @@
                 //console.log(TEMP) // 4,2,3,5,6,3,2,4,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,17,17,17,17,17,17,17,0,0,0,0,0,0,0,0,20,18,19,21,22,19,18,20
                 var z = 0;
                 // zobrist not done
+                //return {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[0,0,0,0,0,0],[0,0,0,0,0,0]]} // chess fen does not show dead or promoted pieces. I could make assumptions but fens with promoted pieces would show the wrong number of dead pieces.
                 return {
                     B: B,
                     p: p,
@@ -388,135 +286,10 @@
                     e: e,
                     h: h,
                     z: z,
-                    M: [],
-                    A: A,
-                    D: [ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ] ]
+                    M: []
                 };
             },
             ///////////////////////////////////////
-            setM: function setM(f, t, P, N, u, D) {
-                // set Moves !!! return nothing. arguments: from, to, P =OldPosition, N=NewPosition, u = promote, D= disambiguation required in san string.
-                var i, j, h = P.h + 1, k = P.k, e = 0, B = P.B, r = B[f], c = r >> 4 & 1, v = r & 7, d = B[t], m = r | f << 5 | t << 12, s;
-                //, A= this.zxa(P.A), D= this.zxa(P.D),p=P.p+1;
-                //var M = [[{r:r,f:f,t:t,u:0,S:S,O:O}]];
-                var M = [ [ {
-                    r: r,
-                    f: f,
-                    t: t,
-                    u: 0
-                } ] ];
-                //console.log('setM f:'+f+'; t:'+t+'; m1:'+m+'; R:'+r+'; F:'+(f<<5)+'; T:'+(t<<12)+'; ?:'+(r|(f<<5)|(t<<12))+';')
-                if (d) {
-                    // dead piece
-                    m |= 1 << 22;
-                    //M[1]=[{r:d,f:t,t:-1,u:0,S:S,O:O}]; // from, to, value
-                    M[1] = [ {
-                        r: d,
-                        f: t,
-                        t: -1,
-                        u: 0
-                    } ];
-                }
-                switch (v) {
-                  // piece value
-                    case 1:
-                    // pawns
-                    if (u) {
-                        // promote
-                        //console.log('setM promote u:'+u+'; u<<19:'+(u<<19)+';')
-                        m |= u << 19;
-                        //console.log('setM?:'+((m>>19)&7)+';')
-                        var V = c * 16 + 8 + u;
-                        var U = c * 16 + 1;
-                        N.B[t] = c * 16 + 8 + u;
-                        // update piece value, the 8 is the promoted flag
-                        //console.log('promote pawn f:'+f+'; t:'+t+'; r:'+B[t]+'; A:'+P.A[c][0]+';')
-                        var debug = N.A[c][0];
-                        debug.forEach(function(item) {
-                            // debug
-                            if (item === null || typeof item === "undefined") console.log("game pawn:%s;", JSON.stringify(debug));
-                        });
-                        // debug
-                        this.zxm(t, N.A[c][0]);
-                        // remove pawn from piece array
-                        N.A[c][u - 1].push(t);
-                        // and add new piece to piece array
-                        //if (M.length>1) M[1].push({r:r,f:t,t:t,u:U,v:V,S:S,O:O}); // kill and promotion
-                        //else M[1] = [{r:r,f:t,t:t,u:U,v:V,S:S,O:O}]; // just a promotion
-                        if (M.length > 1) M[1].push({
-                            r: r,
-                            f: t,
-                            t: t,
-                            u: U,
-                            v: V
-                        }); else M[1] = [ {
-                            r: r,
-                            f: t,
-                            t: t,
-                            u: U,
-                            v: V
-                        } ];
-                    } else {
-                        // possible ep take
-                        i = c ? -16 : 16;
-                        // colorAdjust // black,white
-                        if (t - f == i + i) e = f + i;
-                        if (t == P.e) {
-                            m |= 1 << 23;
-                            //console.log('ep take');
-                            j = t - i;
-                            // enPassantKillSquare
-                            //M[1] = [{r:B[j],f:j,t:-1,u:B[j],S:S,O:O}]; //  from,to,value // add enPassant to move arrray
-                            M[1] = [ {
-                                r: B[j],
-                                f: j,
-                                t: -1,
-                                u: B[j]
-                            } ];
-                        }
-                    }
-                    break;
-
-                  case 6:
-                    // king
-                    i = t - f;
-                    if (i == 2 || i == -2) {
-                        // castle // requires legal check already performed // must check 2 || -2
-                        if (i > 0) {
-                            // kingside
-                            m |= 1 << 24;
-                            i = t + 1;
-                            // rook from
-                            j = t - 1;
-                        } else {
-                            // queenside
-                            m |= 1 << 25;
-                            i = f - 4;
-                            // rook from
-                            j = f - 1;
-                        }
-                        //console.log('castle')
-                        //M[0].push([i,j,0,S,O]);//,B[j]]; // from,to (rook)
-                        //M[0].push({r:B[i],f:i,t:j,u:0,S:S,O:O});//,B[j]]; // from,to (rook)
-                        M[0].push({
-                            r: B[i],
-                            f: i,
-                            t: j,
-                            u: 0
-                        });
-                    }
-                }
-                // calculate check !
-                //var ch = ''
-                if (this.ic(N)) {
-                    // if is check
-                    if (!this.hl(N)) m |= 1 << 27; else m |= 1 << 26;
-                }
-                N.m = m;
-                //console.log('setM m:'+m+';');
-                N.M = M;
-                N.s = this.ncn(N, D ? P : null);
-            },
             ncn: function ncn(P, O) {
                 // create notation // CHESS SPECIFIC !!! // P= current position after setM, O=previous position if disambiguation needed
                 // uses new crazy m bitwise shifted move representation
@@ -579,12 +352,53 @@
                 return "";
             }
         };
+        // const exf = function(b,s) {
+        // 	return this.exfa(this.B[b][s],this.G[b][s])
+        // }
+        var exportFen = exports.exportFen = function exportFen(P) {
+            //(B,G) {
+            //console.log("exportFen:%s;",JSON.stringify(P));
+            var B = P.B;
+            var e = 0, l, k = "", q, f = "", h = P.p;
+            for (var r = 7; r > -1; r--) {
+                if (e > 0) {
+                    f += e;
+                    e = 0;
+                }
+                if (r < 7) f += "/";
+                for (var c = 0; c < 8; c++) {
+                    q = B[c + r * 16];
+                    if (q == null) {
+                        e++;
+                    } else {
+                        if (e > 0) f += e;
+                        e = 0;
+                        l = " pnbrqk".charAt(q & 7);
+                        if (q & 16) f += l; else f += l.toUpperCase();
+                    }
+                }
+            }
+            if (e > 0) f += e;
+            //console.log("f:%s;",f);
+            f += " " + (h & 1 ? "b" : "w") + " ";
+            //console.log("f2:%s;",f);
+            var kc = P.k;
+            if (kc & 1) k += "K";
+            if (kc & 2) k += "Q";
+            if (kc & 4) k += "k";
+            if (kc & 8) k += "q";
+            f += (k == "" ? "-" : k) + " ";
+            //console.log("f3:%s;",f);
+            f += (P.e ? this.cv(P.e) : "-") + " " + P.h + " " + (Math.floor(h / 2) + 1);
+            //console.log("f4:%s;",f);
+            return f;
+        };
         var fen = exports.fen = function fen(string) {
             return Game.fen(string);
         };
         var cv = exports.cv = Game.cv;
         var ucv = exports.ucv = Game.ucv;
-    }, /* 2 */
+    }, /* 1 */
     /***/
     function(module, exports, __webpack_require__) {
         "use strict";
@@ -596,8 +410,7 @@
         // Board,ply,kingcastling,enpassanttargetsquare,halfmove(fiftymove)count,zobrist,Alive,Dead
         //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         //{"B":{"0":4,"1":34,"2":67,"3":101,"4":134,"5":163,"6":194,"7":228,"16":257,"17":289,"18":321,"19":353,"20":385,"21":417,"22":449,"23":481,"96":529,"97":561,"98":593,"99":625,"100":657,"101":689,"102":721,"103":753,"112":788,"113":818,"114":851,"115":885,"116":918,"117":947,"118":978,"119":1012},
-        //"p":0,"k":15,"e":0,"h":0,"z":0,"M":[],
-        //"A":[[[16,17,18,19,20,21,22,23],[1,6],[2,5],[0,7],[3],[4]],[[96,97,98,99,100,101,102,103],[113,118],[114,117],[112,119],[115],[116]]],"D":[[0,0,0,0,0,0],[0,0,0,0,0,0]]};
+        //"p":0,"k":15,"e":0,"h":0,"z":0,"M":[]}
         var ZX = {
             //ZX.R.fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
             //return ZX.R.fen("k7/8/8/8/8/8/P7/K7 w KQkq - 0 1");
@@ -670,9 +483,7 @@
             },
             kl: function kl(c, P) {
                 // king loc (color,Position) // I might strip this out
-                //return P.A[c][5][0] // Alive array
                 var B = P.B, f;
-                // Board style
                 for (f in B) {
                     var r = B[f], C = r >> 4 & 1, v = r & 7;
                     if (C === c && v === 6) return f * 1;
@@ -686,38 +497,17 @@
             },
             aa: function aa(e, k, P) {
                 // any piece is attacking(enemycolor,kingloc,Position)
-                /*
-  		// scan board style:
-  		var B=P.B,f,j,i=8,r;
-  		while (i--) {
-  			j=8;
-  			while (j--) {
-  				f= i*16+j;
-  				r=B[f];
-  				if (r && r>>4&1==c && this.ia(f,t,P)) return 1;
-  			}
-  		}
-  		// return false implied
-  */
-                // scan board style, but might cause unterminated? Or serious need for optimization
                 var B = P.B, f;
-                //console.log("=====> aa e:%s; k:%s; B:%s;",e,k,JSON.stringify(B));
                 for (f in B) {
                     var r = B[f], c = r >> 4 & 1;
-                    //console.log("f:%s; r:%s; c:%s;",f,r,c);
-                    if (Number.isNaN(k) || typeof k !== "number") throw new Error("aa not a number k:" + k);
                     if (c === e && this.ia(f * 1, k, P)) {
-                        console.log("!!!");
                         return 1;
                     }
                 }
             },
             ia: function ia(f, t, P) {
                 // is attacking (from, to, Position) // no more switch. speed is the same. this is shorter.
-                if (Number.isNaN(f) || typeof f !== "number") throw new Error("ia not a number f:" + f);
-                if (Number.isNaN(t) || typeof t !== "number") throw new Error("ia not a number t:" + t);
                 var B = P.B, r = B[f], v = r & 7;
-                //console.log("is attacking from:%s to:%s; value:%s;",f,t,v);
                 if (v === 1) {
                     // pawns. ep check not needed, for testing check.
                     var M = this.M[r >> 4 & 1];
@@ -729,8 +519,6 @@
             },
             ig: function ig(f, t, P) {
                 // is legal generic move
-                if (Number.isNaN(f) || typeof f !== "number") throw new Error("ig not a number f:" + f);
-                if (Number.isNaN(t) || typeof t !== "number") throw new Error("ig not a number t:" + t);
                 var B = P.B, r = B[f], v = r & 7, a = t - f + 128, d;
                 // attackArrayIndex, delta
                 if (!(t & 136) && this.A[a] >> v & 1) {
@@ -761,16 +549,6 @@
             },
             hl: function hl(P) {
                 // has legal move // requires z=this for al() for setP() // called in setM() to determine check
-                // 		var B=P.B, h=P.p&1, r, A=P.A[h],i=A.length,j,p,M; // Boardarray, h=turn, rawpiece, A=alive pieces, current pieces, M=all moves
-                // 		// Alive array
-                // 		while (i--) {
-                // 			p=A[i];
-                // 			j=p.length;
-                // 			while (j--) {
-                // 				M = this.al(p[j],P);
-                // 				if (M.length) return 1
-                // 			}
-                // 		}
                 var B = P.B, h = P.p & 1, f;
                 // Boardarray, h=turn, rawpiece, A=alive pieces, current pieces, M=all moves
                 for (f in B) {
@@ -782,7 +560,7 @@
                 }
             },
             al: function al(f, P) {
-                // all legal moves (z=object,from, Position)
+                // all legal squares (z=object,from, Position) // DOES NOT INCLUDE PROMOTION, not sufficient for perft
                 var B = P.B, r = B[f], c = r >> 4 & 1, v = r & 7, h = P.p & 1, M;
                 //Board, rawpiece, color, value, h=turn, M=allMoves
                 if (c == h) {
@@ -851,35 +629,20 @@
                 // Board, rawpiece, color, enemycolor, kingloc, to, i=Untrimmed length, M= allTrimmedMoves, N=newPosition
                 while (i--) {
                     t = U[i];
-                    //N = z.setP(f,t,P,0); // Do not need to deal with promoting pawns, will not effect if my king is in check
-                    N = this.setP(f, t, P, 0);
+                    N = this.setP(f, t, P);
                     // Do not need to deal with promoting pawns, will not effect if my king is in check
                     k = this.kl(c, N);
                     if (!this.aa(e, k, N)) M.push(U[i]);
                 }
                 return M;
             },
-            //// misc functions:
             cp: function cp(P, t) {
                 // can promote // current position, moved to // used in ald() or ald2() I forget
                 var B = P.B, r = B[t], c = r >> 4 & 1;
                 return (r & 7) == 1 && (!c && t >> 4 == 7 || c && t >> 4 == 0);
             },
-            wtf: function wtf(position) {
-                var alive = position.A;
-                alive.forEach(function(side) {
-                    side.forEach(function(type) {
-                        type.forEach(function(piece) {
-                            if (piece === null || typeof piece === "undefined") {
-                                return "WTF:" + JSON.stringify(position) + ";";
-                            }
-                        });
-                    });
-                });
-                return null;
-            },
             /////////////////////////////////////
-            setP: function setP(f, t, P) {
+            setP: function setP(f, t, P, z) {
                 // set Position // return position json // from 0x88, to 0x88, (promote value Moved to setM) // move has already been determined to be legal, except for "possible" and "any" moves, but they are legal except don't consider checks
                 //console.log('setP from:%s; to:%s; position:%s',f,t,P);
                 //console.log('P.A:'+P.A+';')
@@ -887,19 +650,8 @@
                 //console.log('A:'+P.A+';')
                 //console.log('D:'+P.D+';')
                 //var i,j, h = P.h+1, k = P.k, e = 0, B = new ZX.OC(P.B), r = B[f], c = r>>4&1, v = r&7, M = [[f,t]], d=B[t], A= this.zxa(P.A), D= this.zxa(P.D),p=P.p+1;
-                var i, j, h = P.h + 1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r >> 4 & 1, v = r & 7, d = B[t], A = this.Ac(P.A), D = this.Dc(P.D), p = P.p + 1;
-                //console.log('A[%s]:%s; v-1:%s;',c,A[c],v-1);
-                //console.log('A:'+A+';')
-                // position: {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]],m,s}
-                if (A[c] === null || A[c] === undefined) {
-                    console.log("damn.");
-                }
-                //console.log('set1 P.A:'+P.A+'; new A:'+A+';');
-                //console.log('set1 P.D:'+P.D+'; new D:'+D+';');
-                //var A = [this.zxq(P.A[0]),this.zxq(P.A[1])];
-                //var D = [this.zxa(P.D[0]),this.zxa(P.D[1])];
-                this.zxm(f, A[c][v - 1], t);
-                // move piece in piece array ... (contains piece locations)
+                var i, j, h = P.h + 1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r >> 4 & 1, v = r & 7, d = B[t], p = P.p + 1;
+                //, A= this.Ac(P.A), D= this.Dc(P.D);
                 if (d) {
                     // dead piece at "to" square, direct hit not en passant
                     //M[1]=[t,-1,d]; // add to move array // from, to, value
@@ -907,10 +659,6 @@
                     // dead piece color // same as d>>4&1
                     j = (d & 7) - 1;
                     // dead piece value (shifted for array)
-                    if (d & 8) D[i][0]++; else D[i][j]++;
-                    // else ++ dead piece
-                    this.zxm(t, A[i][j]);
-                    // remove dead piece from piece array
                     h = 0;
                 }
                 B[t] = B[f];
@@ -930,8 +678,6 @@
                         // enPassantKillSquare
                         //M[1] = [j,-1,B[j]]; //  from,to,value // add enPassant to move arrray
                         delete B[j];
-                        // delete from current board
-                        this.zxm(j, A[c ^ 1][0]);
                     }
                     break;
 
@@ -969,10 +715,6 @@
                             j = f - 1;
                         }
                         //M[1] = [i,j];//,B[j]]; // from,to (rook)
-                        //console.log('castle move rook')
-                        //console.log('castle move rook f:'+f+'; t:'+t+'; A:'+A+'; i:'+i+'; j:'+j+'; A[c][3]:'+A[c][3]+';');
-                        this.zxm(i, A[c][3], j);
-                        // move rook in alive pieces array
                         B[j] = B[i];
                         delete B[i];
                     }
@@ -984,62 +726,14 @@
                 // Position:
                 // {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]]}
                 // Board,ply,kingcastling,enpassanttargetsquare,halfmove(fiftymove)count,zobrist,Alive,Dead
-                //return {B:B,p:p,k:k,e:e,h:h,z:z,M:M,A:A,D:D}
                 return {
                     B: B,
                     p: p,
                     k: k,
                     e: e,
                     h: h,
-                    z: zo,
-                    A: A,
-                    D: D
+                    z: zo
                 };
-            },
-            Ac: function Ac(W) {
-                // copy the Alive array // belongs in chess because it's specific.
-                var i = 2, n, o, j, M = [ [], [] ];
-                //M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
-                while (i--) {
-                    // colors 0,1
-                    n = M[i];
-                    o = W[i];
-                    j = 6;
-                    while (j--) {
-                        // pieces
-                        n[j] = o[j].slice();
-                    }
-                }
-                return M;
-            },
-            // 414 calls, 5.01%, 41.359ms
-            Dc: function Dc(W) {
-                // copy the Dead array // belongs in chess because it's specific.
-                var M = [];
-                //M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
-                //while (i--) { // colors 0,1
-                M[0] = W[0].slice();
-                M[1] = W[1].slice();
-                //}
-                return M;
-            },
-            // original was:
-            // 414 calls, 15.1%, 124.664ms
-            // new:
-            // 414 calls, 12.8%, 67.82ms
-            zxm: function zxm(n, h, l) {
-                // zx piece array move // needle, haystack, [new value (piece location)] // deletes at index or inserts optional new value
-                //console.log("zxm h:"+h+';')
-                if (!Array.isArray(h)) throw new Error("this is not an array:" + h);
-                var i = h.length;
-                while (i--) {
-                    if (h[i] === n) {
-                        if (typeof l === "undefined" || l === null) h.splice(i, 1); else h.splice(i, 1, l);
-                        return;
-                    }
-                }
-                console.log("zxm piece:%s; not found in:%s; insert:%s;", n, JSON.stringify(h), l);
-                return true;
             },
             Bc: function Bc(w) {
                 // board copy // this doesn't include generic object functions, does it?
@@ -1048,13 +742,800 @@
                     O[i] = w[i];
                 }
                 return O;
+            },
+            // 	trim : function(w) {
+            // 		return w.replace(/^\s+|\s+$/,"");
+            // 	},
+            cv: function cv(s) {
+                // convert // 0x88// number to letters .... remember long ago you had a problem when the number was actually a string
+                return "abcdefgh".charAt(s & 7) + ((s >> 4) + 1);
+            },
+            vucv: function vucv(j) {
+                // VALIDATE unconvert // for user input, letters to number 0xx88 // used by fen import, anything else?
+                if (j.length == 2 && j.charCodeAt(0) > 96 && j.charCodeAt(0) < 105 && j[1] * 1 == j[1]) return this.ucv(j);
+                return -1;
+            },
+            ucv: function ucv(j) {
+                // unconvert // 0x88 // letters to number
+                return j.charCodeAt(0) - 97 + (j.charAt(1) - 1) * 16;
             }
         };
-        var isLegal = exports.isLegal = function isLegal(from, to, position) {
-            return ZX.il(from, to, position);
+        // export const isLegal = function(move, position) { // This may not be the place for user friendly functions
+        // 	//(typeof w == 'string' || w instanceof String)
+        // 	if (position && move && (move.length === 4 || move.length === 5)) {
+        // 		const from = ZX.vucv(move.substring(0,2));
+        // 		const to = ZX.vucv(move.substring(2,4));
+        // 		if (from !== -1 && to !== -1) {
+        // 			if (move.length === 5) {
+        // 				const promote = "nbrq".indexOf(move.substring(4,5));
+        // 				if (promote !== -1) {
+        // 				
+        // 				}
+        // 			}
+        // 			return ZX.il(from, to, position);
+        // 		}
+        // 	}
+        // }
+        var isLegal = exports.isLegal = function isLegal(f, t, P) {
+            return ZX.il(f, t, P);
         };
-        var allLegal = exports.allLegal = function allLegal(from, position) {
-            return ZX.al(from, position);
+        var allLegal = exports.allLegal = function allLegal(f, P) {
+            return ZX.al(f, P);
         };
+        var isUncheckedPieceMove = exports.isUncheckedPieceMove = function isUncheckedPieceMove(f, t, P) {
+            return ZX.ip(f, t, P);
+        };
+        var calculateLegal = exports.calculateLegal = function calculateLegal(f, t, P) {
+            return ZX.cl(f, t, P);
+        };
+        var isUncheckedPawnMove = exports.isUncheckedPawnMove = function isUncheckedPawnMove(f, t, P) {
+            return ZX.pm(f, t, P);
+        };
+        var isCheck = exports.isCheck = function isCheck(P) {
+            return ZX.ic(P);
+        };
+        var hasLegalMove = exports.hasLegalMove = function hasLegalMove(P) {
+            return ZX.hl(P);
+        };
+        var isLegalCastling = exports.isLegalCastling = function isLegalCastling(f, t, P) {
+            return ZX.kc(f, t, P);
+        };
+    }, /* 2 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {
+            value: true
+        });
+        exports.pgnParse = undefined;
+        var _game = __webpack_require__(0);
+        var _rules = __webpack_require__(1);
+        var parseComments = false;
+        // debug only
+        var pgnerrors = [];
+        // debug
+        var globalmovecount = 0;
+        var globallegalcount = 0;
+        var debug = function debug() {};
+        var initialN = [ {
+            k: "main",
+            v: [ {
+                k: "start",
+                b: 0,
+                s: 0,
+                h: 0
+            } ],
+            x: 0
+        } ];
+        function initialState() {
+            return {
+                source: "",
+                T: [ {
+                    S: [],
+                    b: 0,
+                    s: 0,
+                    x: 0
+                } ],
+                b: 0,
+                s: -1,
+                hos: 0,
+                // half move offset?
+                N: initialN,
+                X: [ {
+                    p: 0,
+                    k: "main",
+                    s: -1,
+                    n: initialN[0]
+                } ]
+            };
+        }
+        var pgnParse = exports.pgnParse = function pgnParse(w) {
+            var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : initialState();
+            var report = arguments[2];
+            //requires rules // w=pgn, report is for pgn editor, to give detailed description if & where it failed
+            state.source = w;
+            globalmovecount = 0;
+            globallegalcount = 0;
+            var bigtime = new Date().getTime();
+            var ficscheck = 0, white = true, black = false, whiterating = false, blackrating = false, fenfound = false, whiteplayer = "", blackplayer = "", whiterating = "", blackrating = "";
+            pgnerrors = [];
+            var position = (0, _game.fen)("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            w = w.replace(/^(\s|&nbsp;)*|(\s|&nbsp;)*$/g, "");
+            //  remove whitespace & html from beginning & end
+            if (w.length < 150 && w.charAt(0) != "[" && w.search(/((\/).+){7}/) > 0) {
+                // fen tag would already be removed. this checks for fen only, not pgn fen tag.
+                position = (0, _game.fen)(w);
+            } else {
+                w = w.replace(/0-0-0|o-o-o/g, "O-O-O");
+                // fix castling
+                w = w.replace(/0-0|o-o/g, "O-O");
+                var headerbreak = w.search(/\]\s*\r?\n\r?\n/);
+                if (headerbreak > -1) {
+                    var header = w.substring(0, headerbreak + 1);
+                    tagarray = new Array();
+                    tagarray = header.match(/\[[^\[\r\n]*\]/g);
+                    // find tags... but brackets in the moves section would be removed, and placed at the top
+                    if (tagarray != null) {
+                        for (i = 0; i < tagarray.length; i++) {
+                            tagname = tagarray[i].match(/\[[^\s\r\n]*\s/);
+                            // between [ & space
+                            tagvalue = tagarray[i].match(/"[^"\r\n]*"/);
+                            // between quotes
+                            tagname[0] = tagname[0].substr(1, tagname[0].length - 2);
+                            tagvalue[0] = tagvalue[0].substr(1, tagvalue[0].length - 2);
+                            if (tagname[0].toLowerCase() == "white") {
+                                if (tagvalue[0] != "") whiteplayer = tagvalue[0];
+                            } else if (tagname[0].toLowerCase() == "black") {
+                                if (tagvalue[0] != "") blackplayer = tagvalue[0];
+                            } else if (tagname[0].toLowerCase() == "whiteelo") {
+                                if (tagvalue[0] != "") whiterating = tagvalue[0];
+                            } else if (tagname[0].toLowerCase() == "blackelo") {
+                                if (tagvalue[0] != "") blackrating = tagvalue[0];
+                            } else if (tagname[0].toLowerCase() == "fen") {
+                                fenfound = true;
+                                position = (0, _game.fen)(tagvalue[0]);
+                            }
+                        }
+                    }
+                    w = w.substring(headerbreak + 1);
+                }
+                w = w.replace(/^(\s|&nbsp;)*|(\s|&nbsp;)*$/g, "");
+                //remove space again
+                // 		if (!fenfound) {
+                // 			const position = fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+                // 			state.T[0].S.push(position);
+                // 		}
+                state.T[0].S.push(position);
+                if (whiteplayer && whiterating) whiteplayer += " (" + whiterating + ")";
+                if (blackplayer && blackrating) blackplayer += " (" + blackrating + ")";
+                //this.plr(whiteplayer,blackplayer) // disabled 2008
+                state.hos = position.p;
+                // half move offset !!! ONLY USED IN PGN IMPORT.... for converting "4." to proper array s
+                ravParse(state, w, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                // the 1 is the complicated index issue. fen is index 0, firstmove index is 1. ravs following that start at index 0
+                //alert('pgn end')
+                //this.bss(0,0,0,0) // disabled 2008
+                //if (this.notation) this.nf()
+                // Notation finish !!! aka build notation DOM
+                // 		
+                // 		var n,N = this.object["notation"];
+                // 		for (n in N) {
+                // 			N[n].nf();
+                // 		}
+                // 2008 ?? this.ol ??
+                //		this.ol = state.T.length // so dragging from sp won't create new branch, but dragging at end of pgn will.
+                //debug((new Date().getTime()-bigtime)+' moves:'+globallegalcount+'/'+globalmovecount+';',this.alr) // DEBUG
+                if (pgnerrors.length) console.log(JSON.stringify(pgnerrors));
+            }
+            return state;
+        };
+        var ravParse = function ravParse(state, w, b, h, i, nb, r, c, d, x, k) {
+            //,e) { // rav parse // w=thepgnstr,b=frombranch,s=fromstep,nb=nextbranch,c=comment, d=dead(line), x=pgnnest, k=bracket
+            console.log("ravParse state:%s;", JSON.stringify(state));
+            if (k) {
+                // first one is already made. for dragging from startpos.
+                if (c) state.X.push({
+                    p: x,
+                    k: "comment",
+                    s: -1
+                }); else if (nb == 0) state.X.push({
+                    p: x,
+                    k: "main",
+                    s: -1
+                }); else state.X.push({
+                    p: x,
+                    k: "rav",
+                    s: -1
+                });
+                x = state.X.length - 1;
+            }
+            var l, n, z, q, nr, nc, nd, nk, br, error, nh, ng, nx, mx;
+            //,nmx
+            var m, any, t, T = [ "" ], hh, io = h;
+            do {
+                console.log("ravp sub:" + b + "; s:" + i + "; nb:" + nb + "; x:" + x + "; X.length:" + state.X.length + ";\n|" + w + "|");
+                nk = false;
+                z = false;
+                n = false;
+                nd = d;
+                nc = c;
+                nr = r;
+                ng = false;
+                nx = x;
+                mx = false;
+                br = false;
+                error = false;
+                // this is for fics teaching ladder. honor linebreaks manually entered into pgn
+                if (k == "{") l = w.search(/}|\r?\n\r?\n/); else l = w.search(/[{\(}\)]/);
+                if (l > -1) {
+                    nk = w.charAt(l);
+                    switch (nk) {
+                      case "(":
+                        if (d) nd++;
+                        nr++;
+                        n = w.substring(l + 1);
+                        break;
+
+                      case "{":
+                        nc++;
+                        n = w.substring(l + 1);
+                        break;
+
+                      case ")":
+                        if (d) nd--;
+                        nr--;
+                        z = w.substring(l + 1);
+                        break;
+
+                      case "}":
+                        nc--;
+                        z = w.substring(l + 1);
+                        break;
+
+                      case "\n":
+                        k = "{";
+                        br = w.substring(l + 1);
+                    }
+                    if (nr < 0) {
+                        error = w.substring(l + 1);
+                        pgnerrors.push("extra closing rav tag found -->" + w.substr(l, 30) + "...\n");
+                        z = false;
+                    } else if (nc < 0) {
+                        error = w.substring(l + 1);
+                        pgnerrors.push("extra closing comment tag found -->" + w.substr(l, 30) + "...\n");
+                        z = false;
+                    }
+                    w = w.slice(0, l);
+                    console.log("|" + w + "|");
+                }
+                if (w) {
+                    if ((!c || parseComments) && !d) {
+                        // if not a comment, or comment parse enabled, and not... dead? (illegal I think)
+                        any = false;
+                        T = [ "" ];
+                        var movereg = /(\d+)\.\s*(\.*)|\s\$(\d+)\b|\b([KQRBN])?([a-h])?([1-8])?[x\-]?([a-h])([1-8])=?([QRBN])?\b[+#]?|\bO-O-O\b[\+#]?|\bO-O\b[\+#]?|--/;
+                        while (m = movereg.exec(w)) {
+                            //alert('m:'+m[0]+';')
+                            console.log("m:" + m[0] + "; nb:" + nb + "; b:" + b + "; s:" + i + "; x:" + x + ";");
+                            if (RegExp.$1) {
+                                // NUMBER // ideal would be that number just changes b,s info
+                                if (any) {
+                                    // revert if "any" and another number found
+                                    b = any[1];
+                                    h = any[2];
+                                    any = false;
+                                }
+                                //alert('NUM M:'+m[0]+'; $1:'+RegExp.$1+'; $2:'+RegExp.$2+';')
+                                hh = (RegExp.$1 - 1) * 2 + (RegExp.$2 ? 1 : 0) - state.hos;
+                                // check for move numbers that suggest t a rav should go
+                                //alert('ss:'+ss+'; ss+1:'+(ss+1)+';')
+                                if (hh != h) {
+                                    // move number is not what is expected
+                                    console.log("move number is not what is expected... h:" + h + "; hh:" + hh + ";");
+                                    // h:10; hh:12;
+                                    //break
+                                    // 2008 lets hope this check isn't needed:
+                                    if (!state.T[b].S[i + hh - h]) {
+                                        // the original move (the previous move) to check legal against does not exist.
+                                        console.log("(!this.B[b][ss])");
+                                        // 2008 Maybe I could just check if (ss == s+1)
+                                        //if (state.T[b].S[hh-1]) { // one ply ahead = insert nothing move. "1.e4 2.d4" // this could be removed maybe. redundant?
+                                        if (hh == h + 1) {
+                                            // one ply ahead = insert nothing move. "1.e4 2.d4" // this could be removed maybe. redundant?
+                                            console.log("any 1");
+                                            // "1.e4 2.d4" or "1.e4  (2.d4 )" or "1.e4 e5 {2....d5 3.c4}"
+                                            any = [ nb, b, h ];
+                                            b = nb;
+                                            h = hh;
+                                        } else if (hh < h) {
+                                            // if it goes back // split!
+                                            //alert('do nu x:'+this.X.length+'; xp:'+this.X[x].p+';?')
+                                            /// XXX
+                                            if (c) state.X.push({
+                                                p: state.X[x].p,
+                                                k: "comment",
+                                                s: x
+                                            }); else state.X.push({
+                                                p: state.X[x].p,
+                                                k: "rav",
+                                                s: x
+                                            });
+                                            //alert('ravp2 X push new length'+this.X.length)
+                                            x = state.X.length - 1;
+                                        } else {}
+                                    } else {
+                                        //alert('other')
+                                        i += hh - h;
+                                        h = hh;
+                                        alert("other b:" + b + "; h:" + h + "; i:" + i + "; state.T[b].S[i]:" + state.T[b].S[i]);
+                                    }
+                                }
+                                if (c) {
+                                    // new conditional
+                                    if (T[1]) T[0] += T[1];
+                                    T[0] += w.substring(0, m.index);
+                                    T[1] = m[0];
+                                }
+                            } else if (ng = RegExp.$3) {} else if (m[0] == "--") {
+                                // NULL explicitly entered // ANY MOVE & ANY OTHER MOVE
+                                //alert('any 2')
+                                any = [ nb, b, h ];
+                                b = nb;
+                                h++;
+                            } else {
+                                if (any) {} else {
+                                    // everything disabled because of confusion between old step, ply and new index.
+                                    console.log("move:" + m[0] + "; b:" + b + "; s:" + i + ";");
+                                    //if (nb==b&&state.T[b].S[h+1]) { // move already exists.make a new branch. and reset branch to frombranch //1.e4  (2.d4 2.c4
+                                    if (nb == b && state.T[b].S[i + 1]) {
+                                        // move already exists.make a new branch. and reset branch to frombranch //1.e4  (2.d4 2.c4
+                                        console.log("exists nu x:" + (state.X.length - 1) + "; xp:" + x + ";");
+                                        //1.e4  (2.d4 2.c4)
+                                        // XXX
+                                        state.X.push({
+                                            p: x,
+                                            k: "rav",
+                                            s: x
+                                        });
+                                        //alert('ravp3 X push new length'+this.X.length)
+                                        x = state.X.length - 1;
+                                        nb = state.T.length;
+                                        // make new branch
+                                        // b=this.pb(b,s) // temporarily disabled !!!
+                                        console.log("this will probably fail. b=this.pb(b,s) left out");
+                                    }
+                                    // why isn't this handled in numbers?
+                                    // because it happens at branch change, nested comment or rav!!!
+                                    // but what about nb/b ???
+                                    // scratch that. b == nb
+                                    if (!state.T[b].S[i]) {
+                                        // nothing moves not explicitly declared, no "--". "12. Qd4 13. Rc3" // the problem with this is what if the next move is not legal? you get "14. ... --" and nothing else. YOU GET THE UGLY
+                                        // 2008 this is the second place where nothing moves are checked. can they be combined?
+                                        console.log("nothing moves not explicitly declared. (!this.B[" + b + "][" + i + "])");
+                                        //1.e4  (2.d4 2.c4)
+                                        //(!this.B[22][-1]) // i = -1 !!!
+                                        break;
+                                        //nothing moves not explicitly declared. (!this.B[22][-1])
+                                        var Fb = b;
+                                        var Fh = h;
+                                        if (state.T[b].S[i - 1]) {
+                                            // this is necessary. not redundant. "2.c4" second any doesn't show without it. // fics teaching ladder 0065.pgn
+                                            //alert('any 3') //1.e4  (2.d4 2.c4)
+                                            any = [ nb, b, i - 1 ];
+                                            b = nb;
+                                        } else {
+                                            // for nested moves that are way behind the current s, in one or more branches back //32. Qg2 (32. Qe2 $2 Nxe5 $1 33. Nxe5 Rxg3+ 34. Kh1 (34. Nxg3 Rxg3+ 35. Kf1 Qxh4 $19. {Deserving attention was 32. Qd4, and White doesn't allow Black to occupy the important diagonal g1-a7.})
+                                            //alert('way back') // it happens! // this doesn't reassign x... // happens in comments usually
+                                            //alert('way back '+m[0] +'___'+w)
+                                            //alert('way back b:'+b+'; nb:'+b+';')
+                                            do {
+                                                b = state.T[b].b;
+                                                if (state.T[b].S[i]) {
+                                                    //alert('way back Fb:'+Fb+'; Fs:'+Fs+'; b:'+b+'; s:'+s+';')
+                                                    nb = state.T.length;
+                                                    break;
+                                                }
+                                            } while (b);
+                                        }
+                                    }
+                                }
+                                if (c) {
+                                    // back to this.
+                                    if (T[1]) T[2] = w.substring(0, m.index); else T[0] += w.substring(0, m.index);
+                                }
+                                // Disabled alert:
+                                //if (!state.T[b].S[h]) alert("this really shouldn't happen, !B[b][h]... b:"+b+"; h:"+h+"; hh:"+hh+"; state.T[b]:"+state.T[b]+"; this.hos:"+this.hos+"; ") // but it did... check pgn notes. for game started midway, from move 30.
+                                console.log("about to ctm m:" + m[0] + "; nb:" + nb + "; b:" + b + "; s:" + i + "; x:" + x + ";");
+                                // 2008 // ctm(P,L,fc,fr,tc,tr,u,m)
+                                //alert('pgn calc legal b:'+b+'; h:'+h+'; i:'+i+';')
+                                var P = convertToMove(state.T[b].S[i], RegExp.$4, RegExp.$5, RegExp.$6, RegExp.$7, RegExp.$8, RegExp.$9, m[0]);
+                                //P = this.ctm(P,RegExp.$4,RegExp.$5,RegExp.$6,RegExp.$7,RegExp.$8,RegExp.$9,m[0])
+                                //if (this.ctm(m[0],this.B[b][s],this.G[b][s],this.Q[b][s],b,s,nb,x,T,any,RegExp.$4,RegExp.$5,RegExp.$6,RegExp.$7,RegExp.$8,RegExp.$9)) {
+                                //console.log('nP:'+P+'; typeof nP:'+(typeof P)+'; (nP<1):'+(P<1)+';')
+                                if (P < 1) {
+                                    console.log("illegal:" + m[0] + "; b:" + b + "; h:" + h + "; s:" + i + "; c:" + (c ? "comment" : "") + ";");
+                                    if (any) {}
+                                    if (c) {
+                                        if (T[2]) T[1] += T[2];
+                                        if (T[1]) T[0] += T[1];
+                                        T = [ T[0] + m[0] ];
+                                    } else {
+                                        // if not a comment then ILLEGAL!!!!   BREAK
+                                        //alert('dead nu x:'+this.X.length+'; xp:'+x+';')
+                                        d++;
+                                        // XXX
+                                        state.X.push({
+                                            p: x,
+                                            k: "illegal",
+                                            s: -1
+                                        });
+                                        //alert('ravp4 X push new length'+this.X.length)
+                                        x = state.X.length - 1;
+                                        // temporarily disabled:
+                                        and(x, w);
+                                        ///// A N D
+                                        //this.anc(x,w) ///// A N D
+                                        break;
+                                    }
+                                } else {
+                                    globallegalcount++;
+                                    console.log("legal nb:" + nb + "; h:" + h + "; s:" + i + "; nP:" + P + "; nP.M:" + P.M + ";");
+                                    // 2008:
+                                    if (!state.T[nb]) {
+                                        //alert('pgn make new branch T')
+                                        state.T.push({
+                                            S: [],
+                                            b: b,
+                                            s: i,
+                                            x: x
+                                        });
+                                        // 2008 assumptions about h == Tb.S.length-1
+                                        i = 0;
+                                    } else i++;
+                                    h++;
+                                    b = nb;
+                                    //state.T[nb].S[i] = nP;
+                                    state.T[nb].S.push(P);
+                                    // when is setM called? setP in rules...
+                                    //this.atn(b,h,i,m[0],x,T,p) // move not used... should create notation in atnb() for internationalization
+                                    atn(b, h, i, x, T);
+                                    //fi=i;
+                                    // end 2008
+                                    //alert('legal:'+m[0]+';')
+                                    T = [ "" ];
+                                    k = 0;
+                                }
+                                any = false;
+                            }
+                            w = w.substring(m.index + m[0].length);
+                            console.log("W:" + w + ";");
+                        }
+                        // (while regex)
+                        if (c && (T[0] || w)) {
+                            // this.anc disabled ///// A N C 
+                            t = "";
+                            if (T[0]) t += T[0];
+                            if (T[1]) t += T[1];
+                            var tw = t + w;
+                            if (tw == " ") tw = "_";
+                            //if (!k||k=="{") this.anc(nb,s,tw,x)
+                            //else if (k=="(") this.anc(nb,s,'('+tw+')',this.X[x].p) // this might not be necessary anymore, with the new bracket check. now, parenthesis and open brackets are not searched for after an open bracket
+                            //else this.anc(nb,s,'['+tw+']',this.X[x].p)
+                            if (!k || k == "{") anc(x, tw); else if (k == "(") anc(state.X[x].p, "(" + tw + ")"); else anc(state.X[x].p, "[" + tw + "]");
+                        }
+                    } else {
+                        // if comment & not comment parse, just add comment. THIS WILL COMMENT DEAD MOVES TOO. need and() add notation dead?
+                        //this.anc disabled
+                        //this.anc(nb,s,w,x)//,oe) ///// A N C
+                        anc(x, w);
+                    }
+                }
+                if (n) {
+                    console.log("next:" + n + ";");
+                    var nni = i - 1, nnb = b;
+                    if (nni < 0) {
+                        //1.e4 (1.d4 (1.c4)) e5 // what is the previous branch / index ?!
+                        nni = state.T[b].s;
+                        nnb = state.T[b].b;
+                    }
+                    //if (nk=="(") w = this.ravp(n,nnb,h-1,nni,state.T.length,nr,nc,nd,x,nk)// RECURSIVE // why s-1 ??? it's fuct when games start with comment: {A highly unusual explosion on h3}
+                    //else w = this.ravp(n,b,h,i,state.T.length,nr,nc,nd,x,nk)// RECURSIVE // why s-1 ??? s seems to work... numbers in rav's would fix it... it's when rav's don't start with numbers !!!
+                    if (nk == "(") w = ravParse(state, n, nnb, h - 1, nni, state.T.length, nr, nc, d, x, nk); else w = ravParse(state, n, b, h, i, state.T.length, nr, nc, d, x, nk);
+                } else if (br) {
+                    // 			if (this.notation) { // add hard break. temporarily disabled ///// A N B
+                    // 				/*
+                    // 				this.anb(x)
+                    // 				this.anb(x)
+                    // 				*/
+                    // 			}
+                    w = br;
+                } else if (error) {
+                    w = error;
+                } else break;
+            } while (w);
+            return z;
+        };
+        var ame = function ame(x) {};
+        var anc = function anc(x, t) {};
+        var atn = function atn(b, h, s, x, C) {};
+        var acs = function acs(x, t, e) {};
+        var and = function and(x, t) {};
+        var anb = function anb(x) {};
+        var convertToMove = function convertToMove(P, L, fc, fr, tc, tr, u, m) {
+            // convert to move 2008 !!! UNTESTED
+            //console.log("convertToMove P:"+P+'; L:'+L+'; fc:'+fc+'; fr:'+fr+'; tc:'+tc+'; tr:'+tr+'; u:'+u+'; m:'+m+';');
+            // P=originalPosition, L=regex pieceLett(r4), fc=fromcol(r5), fr=fromrow(r6), tc=tocol(r7), tr=torow(r8), u=promote(r9), m=full move (for castling)
+            // even newer style:
+            // check this.R.ip for EVERY major piece of type in Alive array
+            // to determine if disambiguation is needed.
+            // doesn't consider if piece is pinned.
+            // this is just a hint to check for da required,
+            // since most moves won't need it.
+            // setM will set san string after setting crazy m bitwise move rep
+            globalmovecount++;
+            var TC, TR, T, t, f, FC = -1, FR = -1, F = -1, v, i, A, r, N, M = [], c, l = 0, U, D = -1;
+            c = P.p & 1;
+            // color = Position.ply & 1. whose turn it is.
+            // determine what we know about from & to squares:
+            if (fc) FC = "abcdefgh".indexOf(fc);
+            // from col given
+            if (fr) {
+                FR = fr - 1;
+                // from row
+                if (fc) F = FC + FR * 16;
+            }
+            TC = "abcdefgh".indexOf(tc);
+            if (tr) TR = tr - 1;
+            var B = P.B;
+            if (L) {
+                // major piece move //
+                v = " NBRQK".indexOf(L);
+                t = TC + TR * 16;
+                // To square. 0x88
+                // 		A = P.A[c][v]; // the array of the locations of this type of piece
+                // 		i = A.length;
+                // 		while (i--) {
+                // 			f=A[i];
+                // 			if (isUncheckedPieceMove(f,t,P)) {
+                // 				D++; // disambiguation. starts at -1
+                // 				if ((FC<0&&FR<0)||FC==(f&7)||FR==f>>4||f==F) M.push(f)
+                // 			}
+                // 			//if (  ((FC<0&&FR<0)||FC==(f&7)||FR==f>>4||f==F)  &&  this.R.ip(f,t,P)  ) M.push(f)
+                // 			// usually only one or two major pieces of any given type, so can check for disambiguation every time.
+                // 			// ip() checks for pawns & castling but whatever.
+                // 		}
+                for (var _f in B) {
+                    var rr = B[_f];
+                    var cc = rr >> 4 & 1;
+                    var vv = rr & 7;
+                    if (cc === c && vv === v && (0, _rules.isUncheckedPieceMove)(_f * 1, t, P)) {
+                        D++;
+                        if (FC < 0 && FR < 0 || FC == (_f & 7) || FR == _f >> 4 || _f == F) M.push(_f * 1);
+                    }
+                }
+                l = M.length;
+                if (l == 1 && (N = (0, _rules.calculateLegal)(M[0], t, P))) {
+                    setMove(M[0], t, P, N, null, D);
+                    return N;
+                }
+            } else if (tr) {
+                // pawn move. not a check for tc because a=0. "ed" style not allowed.
+                if (u) U = "NBRQ".indexOf(u) + 2;
+                // TR must always be given, (not in "cd" take style notation, need separate logic for that)
+                t = TC + TR * 16;
+                // 		A=P.A[c][0];
+                // 		i=A.length;
+                // 		// loop through every pawn & check from column, but code is shorter & simpler this way, with only slight added expense
+                // 		// old style was figure out possible from locations and scan board if a pawn exists there
+                // 		
+                // 		// disambiguation is not needed for pawns
+                // 		while (i--) {
+                // 			f=A[i];
+                // 			//alert('f:'+f+'; FC:'+FC+'; f&7:'+(f&7)+'; TC:'+TC+';');
+                // 			// f:20; FC:-1; f&7:4; TC:4;
+                // 			//if ((FC<0 && (f&7)==TC)||(f&7)==FC) alert('one')
+                // 			//if ((f&7)==TC) alert('one');
+                // 			//if (TC==f&7) alert('two');
+                // 			//if (TC==4) alert('three')
+                // 			if (  ( (FC<0 && (f&7)==TC)||(f&7)==FC) && isUncheckedPawnMove(f,t,P) ) M.push(f)
+                // 		}
+                console.log("ctm c:%s; v:%s;", c, 1);
+                for (var _f2 in B) {
+                    var _rr = B[_f2];
+                    var _cc = _rr >> 4 & 1;
+                    var _vv = _rr & 7;
+                    if (_cc === c && _vv === 1) {
+                        if (FC < 0 && (_f2 & 7) == TC || (_f2 & 7) == FC) {
+                            var result = (0, _rules.isUncheckedPawnMove)(_f2 * 1, t, P);
+                            if (result) M.push(_f2 * 1);
+                        }
+                    }
+                }
+                console.log("ctm M:" + M + "; l:" + M.length + ";");
+                l = M.length;
+                if (l == 1 && (N = (0, _rules.calculateLegal)(M[0], t, P))) {
+                    setMove(M[0], t, P, N, U);
+                    return N;
+                } else {
+                    console.log("ctm nope.");
+                }
+            } else {
+                // castling 
+                // don't need to check if king occupies from square.
+                // this.R.kc does NOT check that, but castling flags would be unset otherwise.
+                // disambiguation not needed for kings
+                t = m.indexOf("O-O-O") < 0 ? c * 112 + 6 : c * 112 + 2;
+                f = c * 112 + 4;
+                //if (m.indexOf('O-O-O')>0) alert('queenside castle from:'+f+'; to:'+t+';')
+                //else alert('kingside castle from:'+f+'; to:'+t+';')
+                if ((0, _rules.isLegalCastling)(f, t, P) && (N = (0, _rules.calculateLegal)(f, t, P))) {
+                    setMove(f, t, P, N, null);
+                    return N;
+                }
+            }
+            return l * -1;
+        };
+        var setMove = function setMove(f, t, P, N, u, D) {
+            // set Moves !!! return nothing. arguments: from, to, P =OldPosition, N=NewPosition, u = promote, D= disambiguation required in san string.
+            var i, j, h = P.h + 1, k = P.k, e = 0, B = P.B, r = B[f], c = r >> 4 & 1, v = r & 7, d = B[t], m = r | f << 5 | t << 12, s;
+            //, A= this.zxa(P.A), D= this.zxa(P.D),p=P.p+1;
+            //var M = [[{r:r,f:f,t:t,u:0,S:S,O:O}]];
+            var M = [ [ {
+                r: r,
+                f: f,
+                t: t,
+                u: 0
+            } ] ];
+            console.log("setMove f:" + f + "; t:" + t + "; m1:" + m + "; R:" + r + "; F:" + (f << 5) + "; T:" + (t << 12) + "; ?:" + (r | f << 5 | t << 12) + ";");
+            if (d) {
+                // dead piece
+                m |= 1 << 22;
+                //M[1]=[{r:d,f:t,t:-1,u:0,S:S,O:O}]; // from, to, value
+                M[1] = [ {
+                    r: d,
+                    f: t,
+                    t: -1,
+                    u: 0
+                } ];
+            }
+            switch (v) {
+              // piece value
+                case 1:
+                // pawns
+                if (u) {
+                    // promote
+                    //console.log('setM promote u:'+u+'; u<<19:'+(u<<19)+';')
+                    m |= u << 19;
+                    //console.log('setM?:'+((m>>19)&7)+';')
+                    var V = c * 16 + 8 + u;
+                    var U = c * 16 + 1;
+                    N.B[t] = c * 16 + 8 + u;
+                    // update piece value, the 8 is the promoted flag
+                    //console.log('promote pawn f:'+f+'; t:'+t+'; r:'+B[t]+'; A:'+P.A[c][0]+';')
+                    // 				var debug = N.A[c][0];
+                    // 				debug.forEach( function(item) { // debug
+                    // 					if (item === null || typeof item === "undefined") console.log("game pawn:%s;",JSON.stringify(debug)); // debug
+                    // 				}); // debug
+                    // 				
+                    // 				this.zxm(t,N.A[c][0]) // remove pawn from piece array
+                    // 				N.A[c][u-1].push(t) // and add new piece to piece array
+                    // 			
+                    //if (M.length>1) M[1].push({r:r,f:t,t:t,u:U,v:V,S:S,O:O}); // kill and promotion
+                    //else M[1] = [{r:r,f:t,t:t,u:U,v:V,S:S,O:O}]; // just a promotion
+                    if (M.length > 1) M[1].push({
+                        r: r,
+                        f: t,
+                        t: t,
+                        u: U,
+                        v: V
+                    }); else M[1] = [ {
+                        r: r,
+                        f: t,
+                        t: t,
+                        u: U,
+                        v: V
+                    } ];
+                } else {
+                    // possible ep take
+                    i = c ? -16 : 16;
+                    // colorAdjust // black,white
+                    if (t - f == i + i) e = f + i;
+                    if (t == P.e) {
+                        m |= 1 << 23;
+                        //console.log('ep take');
+                        j = t - i;
+                        // enPassantKillSquare
+                        //M[1] = [{r:B[j],f:j,t:-1,u:B[j],S:S,O:O}]; //  from,to,value // add enPassant to move arrray
+                        M[1] = [ {
+                            r: B[j],
+                            f: j,
+                            t: -1,
+                            u: B[j]
+                        } ];
+                    }
+                }
+                break;
+
+              case 6:
+                // king
+                i = t - f;
+                if (i == 2 || i == -2) {
+                    // castle // requires legal check already performed // must check 2 || -2
+                    if (i > 0) {
+                        // kingside
+                        m |= 1 << 24;
+                        i = t + 1;
+                        // rook from
+                        j = t - 1;
+                    } else {
+                        // queenside
+                        m |= 1 << 25;
+                        i = f - 4;
+                        // rook from
+                        j = f - 1;
+                    }
+                    //console.log('castle')
+                    //M[0].push([i,j,0,S,O]);//,B[j]]; // from,to (rook)
+                    //M[0].push({r:B[i],f:i,t:j,u:0,S:S,O:O});//,B[j]]; // from,to (rook)
+                    M[0].push({
+                        r: B[i],
+                        f: i,
+                        t: j,
+                        u: 0
+                    });
+                }
+            }
+            // calculate check !
+            //var ch = ''
+            if ((0, _rules.isCheck)(N)) {
+                // if is check
+                if (!(0, _rules.hasLegalMove)(N)) m |= 1 << 27; else m |= 1 << 26;
+            }
+            N.m = m;
+            //console.log('setM m:'+m+';');
+            N.M = M;
+        };
+    }, /* 3 */
+    /***/
+    function(module, exports, __webpack_require__) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", {
+            value: true
+        });
+        var _rules = __webpack_require__(1);
+        Object.keys(_rules).forEach(function(key) {
+            if (key === "default" || key === "__esModule") return;
+            Object.defineProperty(exports, key, {
+                enumerable: true,
+                get: function get() {
+                    return _rules[key];
+                }
+            });
+        });
+        var _game = __webpack_require__(0);
+        Object.keys(_game).forEach(function(key) {
+            if (key === "default" || key === "__esModule") return;
+            Object.defineProperty(exports, key, {
+                enumerable: true,
+                get: function get() {
+                    return _game[key];
+                }
+            });
+        });
+        var _pgn = __webpack_require__(2);
+        //const position = fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        var position = (0, _game.fen)("k7/8/8/3p4/8/8/4p1K1/8 b - - 1 3");
+        console.log("position:%s;", JSON.stringify(position));
+        var from = (0, _game.ucv)("e2");
+        var to = (0, _game.ucv)("e4");
+        var ok = (0, _rules.isLegal)(from, to, position);
+        console.log("from:%s;", from);
+        console.log("to:%s;", to);
+        console.log("isLegal:%s;", JSON.stringify(ok));
+        var all = (0, _rules.allLegal)(from, position);
+        console.log("allLegal:%s;", JSON.stringify(all));
+        var pgn = "1. e4 e5 2. Nf3 Nc6";
+        var result = (0, _pgn.pgnParse)(pgn);
+        console.log(JSON.stringify(result));
     } ]);
 });

@@ -51,7 +51,7 @@ const Game = {
 		if (j.length==2 && j.charCodeAt(0)>96 && j.charCodeAt(0)<105 && j[1]*1 == j[1]) return this.ucv(j)
 		return -1;
 	},
-	ucv : function(j) {	// unconvert // 0x88 // letters to number
+	ucv : function(j) {// unconvert // 0x88 // letters to number
 		return (j.charCodeAt(0)-97) + ((j.charAt(1)-1)*16)
 	},
 	zg : function(w){// zap gremlins. convert all funky spaces to regular, actually converts anything not ascii word, slash or dash.
@@ -193,7 +193,8 @@ const Game = {
 	
 		//console.log(TEMP) // 4,2,3,5,6,3,2,4,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,17,17,17,17,17,17,17,0,0,0,0,0,0,0,0,20,18,19,21,22,19,18,20
 		var z = 0 // zobrist not done
-		return {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[0,0,0,0,0,0],[0,0,0,0,0,0]]} // chess fen does not show dead or promoted pieces. I could make assumptions but fens with promoted pieces would show the wrong number of dead pieces.
+		//return {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[0,0,0,0,0,0],[0,0,0,0,0,0]]} // chess fen does not show dead or promoted pieces. I could make assumptions but fens with promoted pieces would show the wrong number of dead pieces.
+		return {B:B,p:p,k:k,e:e,h:h,z:z,M:[]};//,A:A,D:[[0,0,0,0,0,0],[0,0,0,0,0,0]]} // chess fen does not show dead or promoted pieces. I could make assumptions but fens with promoted pieces would show the wrong number of dead pieces.
 		// what about step/start offset ???
 		// that should be stored in the branch, shouldn't it?
 		// start offset is pure branch array info
@@ -204,87 +205,6 @@ const Game = {
 	
 	///////////////////////////////////////
 	
-	setM : function(f,t,P,N,u,D) { // set Moves !!! return nothing. arguments: from, to, P =OldPosition, N=NewPosition, u = promote, D= disambiguation required in san string.
-		
-		var i,j, h = P.h+1, k = P.k, e = 0, B=P.B, r = B[f], c = r>>4&1, v = r&7, d=B[t], m=r|f<<5|t<<12, s;//, A= this.zxa(P.A), D= this.zxa(P.D),p=P.p+1;
-		//var M = [[{r:r,f:f,t:t,u:0,S:S,O:O}]];
-		var M = [[{r:r,f:f,t:t,u:0}]]; 
-		
-		//console.log('setM f:'+f+'; t:'+t+'; m1:'+m+'; R:'+r+'; F:'+(f<<5)+'; T:'+(t<<12)+'; ?:'+(r|(f<<5)|(t<<12))+';')
-		if (d) { // dead piece
-			m |= 1<<22;
-			//M[1]=[{r:d,f:t,t:-1,u:0,S:S,O:O}]; // from, to, value
-			M[1]=[{r:d,f:t,t:-1,u:0}]; // from, to, value
-			//M = [[{r:d,f:t,t:-1,u:d,S:S,O:O},{r:r,f:f,t:t,u:0,S:S,O:O}]];
-			//console.log('setM dead piece');
-		}
-		switch (v) { // piece value
-			case 1: // pawns
-				if (u) { // promote
-					//console.log('setM promote u:'+u+'; u<<19:'+(u<<19)+';')
-					m |= u<<19;
-					//console.log('setM?:'+((m>>19)&7)+';')
-					var V = c*16+8+u;
-					var U = c*16+1;
-					N.B[t] = c*16+8+u; // update piece value, the 8 is the promoted flag
-					//console.log('promote pawn f:'+f+'; t:'+t+'; r:'+B[t]+'; A:'+P.A[c][0]+';')
-					
-					var debug = N.A[c][0];
-					debug.forEach( function(item) { // debug
-						if (item === null || typeof item === "undefined") console.log("game pawn:%s;",JSON.stringify(debug)); // debug
-					}); // debug
-					
-					this.zxm(t,N.A[c][0]) // remove pawn from piece array
-					N.A[c][u-1].push(t) // and add new piece to piece array
-				
-					//if (M.length>1) M[1].push({r:r,f:t,t:t,u:U,v:V,S:S,O:O}); // kill and promotion
-					//else M[1] = [{r:r,f:t,t:t,u:U,v:V,S:S,O:O}]; // just a promotion
-					if (M.length>1) M[1].push({r:r,f:t,t:t,u:U,v:V}); // kill and promotion
-					else M[1] = [{r:r,f:t,t:t,u:U,v:V}]; // just a promotion
-				} else { // possible ep take
-					i = (c) ? -16 : 16; // colorAdjust // black,white
-					if (t-f == i+i) e = f+i;
-					if (t == P.e) {
-						m |= 1<<23
-						//console.log('ep take');
-						j=t-i; // enPassantKillSquare
-						//M[1] = [{r:B[j],f:j,t:-1,u:B[j],S:S,O:O}]; //  from,to,value // add enPassant to move arrray
-						M[1] = [{r:B[j],f:j,t:-1,u:B[j]}]; //  from,to,value // add enPassant to move arrray
-					}
-				}
-				break;
-			case 6: // king
-				i = t-f;
-				if (i==2||i==-2) { // castle // requires legal check already performed // must check 2 || -2
-					if (i>0) { // kingside
-						m |= 1<<24;
-						i = t+1; // rook from
-						j = t-1 // rook to
-					} else { // queenside
-						m |= 1<<25;
-						i = f-4; // rook from
-						j = f-1 // rook to
-					}
-					//console.log('castle')
-					//M[0].push([i,j,0,S,O]);//,B[j]]; // from,to (rook)
-					//M[0].push({r:B[i],f:i,t:j,u:0,S:S,O:O});//,B[j]]; // from,to (rook)
-					M[0].push({r:B[i],f:i,t:j,u:0});// from,to (rook)
-				}
-		}
-		// calculate check !
-		//var ch = ''
-		if (this.ic(N)) { // if is check
-			if (!this.hl(N)) m |= 1<<27; // if is checkmate. uses hl() has legal, because check already determined.
-			//if (this.R.im(this,N)) m |= 1<<27; // if is checkmate
-			else m |= 1<<26; // else just check
-		}
-		N.m = m;
-		//console.log('setM m:'+m+';');
-		N.M = M;
-		N.s = this.ncn(N,D?P:null) // D is a hint flag from pgn import. cmt() just checks this.R.ip(), if more than one, da() is more thorough.
-	
-	
-	},
 	
 	ncn : function(P,O) { // create notation // CHESS SPECIFIC !!! // P= current position after setM, O=previous position if disambiguation needed
 		// uses new crazy m bitwise shifted move representation
@@ -362,6 +282,55 @@ const Game = {
 		*/
 	}
 }
+
+
+// const exf = function(b,s) {
+// 	return this.exfa(this.B[b][s],this.G[b][s])
+// }
+export const exportFen = function(P) {//(B,G) {
+	//console.log("exportFen:%s;",JSON.stringify(P));
+	const B = P.B;
+	var e=0,l,k='',q,f='',h=P.p;
+	for (let r=7;r>-1;r--) {
+		if (e>0){
+			f+=e
+			e=0
+		}
+		if (r<7) f+='/'
+		for (let c=0; c<8; c++) {
+			q = B[c+(r*16)]
+			if (q==null) {
+				e++
+			} else {
+				if (e>0) f+=e
+				e=0
+				l=" pnbrqk".charAt(q&7)
+				if(q&16)f+=l
+				else f+=l.toUpperCase()
+			}
+		}
+	}
+	if(e>0)f+=e
+	
+	//console.log("f:%s;",f);
+	
+	f+=' '+((h&1)?'b':'w')+' '
+	//console.log("f2:%s;",f);
+	const kc=P.k
+	if(kc&1)k+='K'
+	if(kc&2)k+='Q'
+	if(kc&4)k+='k'
+	if(kc&8)k+='q'
+
+	f+=((k=='')?'-':k)+' '
+	//console.log("f3:%s;",f);
+	
+	f+=((P.e)?this.cv(P.e):'-')+' '+P.h+' '+(Math.floor((h)/2)+1)
+	//console.log("f4:%s;",f);
+	
+	return f;
+}
+
 
 export const fen = function(string) {
 	return Game.fen(string);

@@ -1,14 +1,31 @@
-import { fen } from "../source/game.js";
+import { fen, exportFen } from "../source/game.js";
 import { isLegal, allLegal } from "../source/rules.js";
 const assert = require("assert");
 
 // https://chessprogramming.wikispaces.com/Perft+Results
 // https://raw.githubusercontent.com/serberoth/chess/master/perfsuite.epd
+// http://www.stmintz.com/ccc/index.php?id=357560
+// http://www.stmintz.com/ccc/index.php?id=488817
+// http://code.haskell.org/ChessLibrary/perftsuite.epd
+
+const max = 20000;
 
 
-
-const tickmarks = `
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ;D1 20 ;D2 400 ;D3 8902 ;D4 197281 ;D5 4865609 ;D6 119060324
+const full = `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ;D1 20 ;D2 400 ;D3 8902 ;D4 197281
+k7/8/8/3p4/4p3/8/8/7K b - - 0 1 ;D1 5 ;D2 15 ;D3 102 ;D4 569 ;D5 4337 ;D6 22579
+	k7/8/8/3p4/8/4p3/8/7K w - - 0 2 ;D1 3 ;D2 15 ;D3 80 ;D4 592
+		k7/8/8/3p4/8/4p3/8/6K1 b - - 1 2 ;D1 5 ;D2 20 ;D3 148
+			k7/8/8/3p4/8/8/4p3/6K1 w - - 0 3 ;D1 4 ;D2 32
+				k7/8/8/3p4/8/8/4p2K/8 b - - 1 3 ;D1 8  
+				k7/8/8/3p4/8/8/4p3/7K b - - 1 3 ;D1 8
+				k7/8/8/3p4/8/8/4pK2/8 b - - 1 3 ;D1 8
+				k7/8/8/3p4/8/8/4p1K1/8 b - - 1 3 ;D1 8
+		k7/8/8/3p4/8/4p3/6K1/8 b - - 1 2 ;D1 5 ;D2 35 ;D3 259
+		k7/8/8/3p4/8/4p3/7K/8 b - - 1 2 ;D1 5 ;D2 25 ;D3 185
+	k7/8/8/8/3pp3/8/8/7K w - - 0 2 ;D1 3 ;D2 5 ;D3 84 ;D4 573
+	8/k7/8/3p4/4p3/8/8/7K w - - 1 2 ;D1 3 ;D2 7 ;D3 118 ;D4 894
+	8/1k6/8/3p4/4p3/8/8/7K w - - 1 2 ;D1 3 ;D2 30 ;D3 169 ;D4 1384
+	1k6/8/8/3p4/4p3/8/8/7K w - - 1 2 ;D1 3 ;D2 21 ;D3 118 ;D4 894
 r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1 ;D1 48 ;D2 2039 ;D3 97862 ;D4 4085603 ;D5 193690690 ;D6 8031647685
 4k3/8/8/8/8/8/8/4K2R w K - 0 1 ;D1 15 ;D2 66 ;D3 1197 ;D4 7059 ;D5 133987 ;D6 764643
 4k3/8/8/8/8/8/8/R3K3 w Q - 0 1 ;D1 16 ;D2 71 ;D3 1287 ;D4 7626 ;D5 145232 ;D6 846648
@@ -126,114 +143,143 @@ k7/6p1/8/8/8/8/7P/K7 w - - 0 1 ;D1 5 ;D2 25 ;D3 161 ;D4 1035 ;D5 7574 ;D6 55338
 k7/7p/8/8/8/8/6P1/K7 b - - 0 1 ;D1 5 ;D2 25 ;D3 161 ;D4 1035 ;D5 7574 ;D6 55338
 k7/6p1/8/8/8/8/7P/K7 b - - 0 1 ;D1 5 ;D2 25 ;D3 161 ;D4 1035 ;D5 7574 ;D6 55338
 3k4/3pp3/8/8/8/8/3PP3/3K4 b - - 0 1 ;D1 7 ;D2 49 ;D3 378 ;D4 2902 ;D5 24122 ;D6 199002
-8/Pk6/8/8/8/8/6Kp/8 w - - 0 1 ;D1 11 ;D2 97 ;D3 887 ;D4 8048 ;D5 90606 ;D6 1030499
-n1n5/1Pk5/8/8/8/8/5Kp1/5N1N w - - 0 1 ;D1 24 ;D2 421 ;D3 7421 ;D4 124608 ;D5 2193768 ;D6 37665329
-8/PPPk4/8/8/8/8/4Kppp/8 w - - 0 1 ;D1 18 ;D2 270 ;D3 4699 ;D4 79355 ;D5 1533145 ;D6 28859283
-n1n5/PPPk4/8/8/8/8/4Kppp/5N1N w - - 0 1 ;D1 24 ;D2 496 ;D3 9483 ;D4 182838 ;D5 3605103 ;D6 71179139
-8/Pk6/8/8/8/8/6Kp/8 b - - 0 1 ;D1 11 ;D2 97 ;D3 887 ;D4 8048 ;D5 90606 ;D6 1030499
-n1n5/1Pk5/8/8/8/8/5Kp1/5N1N b - - 0 1 ;D1 24 ;D2 421 ;D3 7421 ;D4 124608 ;D5 2193768 ;D6 37665329
-8/PPPk4/8/8/8/8/4Kppp/8 b - - 0 1 ;D1 18 ;D2 270 ;D3 4699 ;D4 79355 ;D5 1533145 ;D6 28859283
-n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1 ;D1 24 ;D2 496 ;D3 9483 ;D4 182838 ;D5 3605103 ;D6 71179139
+
+
+
 `;
 
+// These are wrong:
+// 8/Pk6/8/8/8/8/6Kp/8 w - - 0 1 ;D1 11 ;D2 97 ;D3 887 ;D4 8048 ;D5 90606 ;D6 1030499
+// n1n5/1Pk5/8/8/8/8/5Kp1/5N1N w - - 0 1 ;D1 24 ;D2 421 ;D3 7421 ;D4 124608 ;D5 2193768 ;D6 37665329
+// 8/PPPk4/8/8/8/8/4Kppp/8 w - - 0 1 ;D1 18 ;D2 270 ;D3 4699 ;D4 79355 ;D5 1533145 ;D6 28859283
+// n1n5/PPPk4/8/8/8/8/4Kppp/5N1N w - - 0 1 ;D1 24 ;D2 496 ;D3 9483 ;D4 182838 ;D5 3605103 ;D6 71179139
+// 8/Pk6/8/8/8/8/6Kp/8 b - - 0 1 ;D1 11 ;D2 97 ;D3 887 ;D4 8048 ;D5 90606 ;D6 1030499
+// n1n5/1Pk5/8/8/8/8/5Kp1/5N1N b - - 0 1 ;D1 24 ;D2 421 ;D3 7421 ;D4 124608 ;D5 2193768 ;D6 37665329
+// 8/PPPk4/8/8/8/8/4Kppp/8 b - - 0 1 ;D1 18 ;D2 270 ;D3 4699 ;D4 79355 ;D5 1533145 ;D6 28859283
+// n1n5/PPPk4/8/8/8/8/4Kppp/5N1N b - - 0 1 ;D1 24 ;D2 496 ;D3 9483 ;D4 182838 ;D5 3605103 ;D6 71179139
 
-const answerArray = [
-	[
-		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-		20, // 1
-		400, // 2
-		8902, // 3
-// // 		197281, // 4
-// // 		4865609, // 5
-// // 		119060324, // 6
-// // 		3195901860, // 7
-// // 		84998978956, // 8
-// // 		2439530234167, // 9
-// // 		69352859712417, // 10
-// // 		2097651003696806, // 11
-// // 		62854969236701747, // 12
-// // 		1981066775000396239, // 13
-	],
-	[
-		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
-		48,
-		2039,
-// 		97862
-	],
-	[
-		"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
-		14,
-		191,
-		2812,
-// 		43238
-	],
-	[
-		"r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
-		46,
-		2079,
-// 		89890
-	],
-	[
-		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
-		48,
-		2039,
-// 		97862
-	],
-	[
-		"4k3/8/8/8/8/8/8/4K2R w K - 0 1",
-		15,
-		66,
-		1197,
-		7059
-	],
-	[
-		"4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1",
-		26,
-		112,
-		3189,
-		17945
-	],
-	[
-		"8/1n4N1/2k5/8/8/5K2/1N4n1/8 b - - 0 1",
-		15,
-		193,
-		2816,
-// 		40039
-	],
-	[
-		"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
-		26,
-		568,
-		13744
-	],
-
-	[
-		"r3k3/1K6/8/8/8/8/8/8 w q - 0 1",
-		4,
-		49,
-		243,
-		3991,
-		20780
-	],
-
-	[ // failing
-		"r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
-		6,
-		264,
-		9467
-	],
-
-// 	[ // This one from chessprogramming.wikispaces may not be reliable. Solve after you're sure everything else is working
-// 		//"rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
-// 		"rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6",
-// 		44,
-// // 		1486,
-// // 		62379
+//const lineRE = new RegExp(/(\r?\n\t*)+/g);
+const lineRE = new RegExp(/\n+\t*/g);
+const semiRE = new RegExp(/\s;(?:D\d)?\s/g);
+const lines = full.split(lineRE);
+const answerArray = [];
+lines.forEach( string => {
+	if (string.length) answerArray.push(string.split(semiRE));
+});
+// console.log("==========");
+// console.log(JSON.stringify(answerArray));
+// console.log("==========");
+// const NOTanswerArray = [
+// 	[
+// 		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+// 		20, // 1
+// 		400, // 2
+// 		8902, // 3
+// // // 		197281, // 4
+// // // 		4865609, // 5
+// // // 		119060324, // 6
+// // // 		3195901860, // 7
+// // // 		84998978956, // 8
+// // // 		2439530234167, // 9
+// // // 		69352859712417, // 10
+// // // 		2097651003696806, // 11
+// // // 		62854969236701747, // 12
+// // // 		1981066775000396239, // 13
 // 	],
-];
+// 	[
+// 		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+// 		48,
+// 		2039,
+// // 		97862
+// 	],
+// 	[
+// 		"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1",
+// 		14,
+// 		191,
+// 		2812,
+// // 		43238
+// 	],
+// 	[
+// 		"r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+// 		46,
+// 		2079,
+// // 		89890
+// 	],
+// 	[
+// 		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+// 		48,
+// 		2039,
+// // 		97862
+// 	],
+// 	[
+// 		"4k3/8/8/8/8/8/8/4K2R w K - 0 1",
+// 		15,
+// 		66,
+// 		1197,
+// 		7059
+// 	],
+// 	[
+// 		"4k3/8/8/8/8/8/8/R3K2R w KQ - 0 1",
+// 		26,
+// 		112,
+// 		3189,
+// 		17945
+// 	],
+// 	[
+// 		"8/1n4N1/2k5/8/8/5K2/1N4n1/8 b - - 0 1",
+// 		15,
+// 		193,
+// 		2816,
+// // 		40039
+// 	],
+// 	[
+// 		"r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+// 		26,
+// 		568,
+// 		13744
+// 	],
+// 
+// 	[
+// 		"r3k3/1K6/8/8/8/8/8/8 w q - 0 1",
+// 		4,
+// 		49,
+// 		243,
+// 		3991,
+// 		20780
+// 	],
+// 
+// 	[ // failing
+// 		"r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+// 		6,
+// 		264,
+// 		9467
+// 	],
+// 
+// // 	[ // This one from chessprogramming.wikispaces may not be reliable. Solve after you're sure everything else is working
+// // 		//"rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
+// // 		"rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6",
+// // 		44,
+// // // 		1486,
+// // // 		62379
+// // 	],
+// ];
 
 
 
+describe("FEN", function() {
+	answerArray.forEach( function(answer) {
+		//console.log("answer:%s;",JSON.stringify(answer));
+		const fenString = answer[0];
+		//console.log("fenString:%s;",fenString);
+		const position = fen(fenString);
+		//console.log("position:%s;",position);
+		const result = exportFen(position);
+		//console.log("result:%s;",result);
+		it(fenString, function() {
+			assert.equal(fenString,result);
+		});
+	});
+});
 
 describe("Perft", function() {
 	this.timeout(Infinity);
@@ -269,10 +315,14 @@ describe("Perft", function() {
 				if (!next) throw new Error("not a legal move ?!");
 				result.push(next);
 			});
-
 		}
 		return result;
 	}
+	
+	function parse(array) {
+	
+	}
+	
 	answerArray.forEach( function(answer) {
 		const fenString = answer[0];
 		describe(fenString, function() {
@@ -280,23 +330,26 @@ describe("Perft", function() {
 			array.push(fen(fenString));
 			let depth = answer.length - 1;
 			for (let i=0; i<depth; i++) {
-				it(answer[i+1]+"", function() {
-					let result = [];
+				const score = answer[i+1] * 1;
+				let result = [];
+				if (score < max) it(score+"", function() {
 					array.forEach( function(position) {
 						const every = everyPossiblePosition.call(null,position);
 						result = result.concat(every);
 					});
-					array = result.slice(0);
+					array = result;
 					//assert.equal(result.length, answer[i+1]);
-					if (result.length !== answer[i+1]) {
+					if (result.length !== score) {
 						const error = new Error();
-						const message = "depth:"+(i+1)+"; expected:"+answer[i+1]+"; actual:"+result.length+";";
+						const message = "depth:"+(i+1)+"; expected:"+score+"; wrong:"+result.length+";";
 						error.message = message;
 						error.showDiff = false;
 						throw error;
 					}
 				});
+				//result.length = 0;
 			}
+			//array.length = 0;
 		});
 	});
 });

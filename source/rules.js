@@ -72,8 +72,7 @@ const ZX = {
 		return !(B[f+d] || B[t] || (x && B[f-3]) || this.aa(e,f,P) || this.aa(e,f+d,P) ) // "to" square is checked in trim.
 	},
 	kl:function(c,P) {// king loc (color,Position) // I might strip this out
-		//return P.A[c][5][0] // Alive array
-		var B = P.B, f; // Board style
+		var B = P.B, f;
 		for (f in B) {
 			var r=B[f], C=r>>4&1, v=r&7;
 			if (C === c && v === 6) return f*1;
@@ -85,40 +84,24 @@ const ZX = {
 		return !p
 	},
 	aa:function(e,k,P) { // any piece is attacking(enemycolor,kingloc,Position)
-
-		// scan board style, but might cause unterminated? Or serious need for optimization
 		var B=P.B,f;
-		//console.log("=====> aa e:%s; k:%s; B:%s;",e,k,JSON.stringify(B));
 		for (f in B) {
 			var r = B[f], c = r>>4&1;
 			if (c === e && this.ia(f*1,k,P)) {
 				return 1;
 			}
 		}
-
-		//scan Alive array style:
-// 		var A=P.A[e],i=A.length,p,j;
-// 		while (i--) {
-// 			p=A[i];
-// 			j=p.length;
-// 			while (j--) {
-// 				if (this.ia(p[j],k,P)) return 1
-// 			}
-// 		}
 		// return false implied
 	},
-
 	ia:function(f,t,P) { // is attacking (from, to, Position) // no more switch. speed is the same. this is shorter.
 		var B=P.B, r=B[f], v=r&7;
-		//console.log("is attacking from:%s to:%s; value:%s;",f,t,v);
 		if (v===1) {// pawns. ep check not needed, for testing check.
-				var M=this.M[r>>4&1];
-				return (t===f+M[2] || t===f+M[3]); // is 0x88 check needed here? I don't think so.
+			var M=this.M[r>>4&1];
+			return (t===f+M[2] || t===f+M[3]); // is 0x88 check needed here? I don't think so.
 		}
 		if (v===6) return !(t&0x88) && this.A[t-f+128]>>v&1 // operator precedence ?! // (this.A[t-f+128]>>v)&1
 		return this.ig(f,t,P) // doesn't need checkcolor in is legal generic move, but whatever...
 	},
-
 	ig:function(f,t,P) { // is legal generic move
 		var B=P.B, r=B[f], v=r&7, a=t-f+128, d; // attackArrayIndex, delta
 		if ( !(t&0x88) && this.A[a]>>v&1 ) { // operator precedence?! // ((this.A[a]>>v)&1)
@@ -133,13 +116,11 @@ const ZX = {
 		}
 		// return false implied
 	},
-	
 	// THESE SHOULD BE COMBINED. NO NEED TO CALC HAS ANY LEGAL MOVE SEVERAL TIMES.
 	ic:function(P) { // is check // called in setM() to determine check
 		var p = P.p, h=p&1, k=this.kl(h,P);
 		return this.aa(h^1,k,P)
 	},
-	
 	im:function(P) { // is mate // requires z=this for hl() for al() for setP() // not used
 		if ( !this.hl(P) ) return this.ic(P)
 		// return false implied
@@ -148,16 +129,6 @@ const ZX = {
 		if ( !this.hl(P) ) return !this.ic(P)
 	},
 	hl:function(P) { // has legal move // requires z=this for al() for setP() // called in setM() to determine check
-// 		var B=P.B, h=P.p&1, r, A=P.A[h],i=A.length,j,p,M; // Boardarray, h=turn, rawpiece, A=alive pieces, current pieces, M=all moves
-// 		// Alive array
-// 		while (i--) {
-// 			p=A[i];
-// 			j=p.length;
-// 			while (j--) {
-// 				M = this.al(p[j],P);
-// 				if (M.length) return 1
-// 			}
-// 		}
 		var B=P.B, h=P.p&1, f; // Boardarray, h=turn, rawpiece, A=alive pieces, current pieces, M=all moves
 		for (f in B) {
 			var r = B[f], c = r>>4&1;
@@ -168,8 +139,7 @@ const ZX = {
 		}
 		// return false implied
 	},
-	
-	al:function(f,P) { // all legal moves (z=object,from, Position)
+	al:function(f,P) { // all legal squares (z=object,from, Position) // DOES NOT INCLUDE PROMOTION, not sufficient for perft
 		var B=P.B, r=B[f], c=r>>4&1, v=r&7, h=P.p&1, M; //Board, rawpiece, color, value, h=turn, M=allMoves
 		if (c==h) {
 			switch(v) {
@@ -186,9 +156,7 @@ const ZX = {
 		}// else console.log('the color is wrong')
 		return []
 	},
-	
 	ap:function(f,P) { // all unchecked pawn moves (from, Position)
-		
 		var B=P.B, r=B[f], c=r>>4&1, U=[], M=this.M[c],d=M[1],l=f+M[2],r=f+M[3],e=P.e; // Board, rawpiece, color, U=allUntrimmedMoves (returned), M=pawn directions, d=direction(from M),l=left(from M),r=right(from M), e= ep target square (maybe I should use "n")
 		if (!B[f+d]) {
 			U.push(f+d);
@@ -209,9 +177,7 @@ const ZX = {
 		if (this.kc(f,f-2,P) ) M.push(f-2);
 		return M
 	},
-	
 	ag:function(f,P) {
-
 		var B=P.B, r=B[f], c=r>>4&1, v=r&7, D=this.M[v], t, d, i=D.length, M=[]; // Board, rawpiece, color, value, Directions array (NOT DELTA ARRAY), t=to square, d=individual delta, i = Directions array length, M=allUntrimmedMoves
 		while (i--) {
 			d=D[i];
@@ -224,22 +190,16 @@ const ZX = {
 		}
 		return M
 	},
-	
 	tm: function(U,f,P) { // trim moves (z=object,Untrimmed, from, Position)
-		
 		var B=P.B, r=B[f], c=r>>4&1, e=c^1, k, t, i=U.length, M=[],N; // Board, rawpiece, color, enemycolor, kingloc, to, i=Untrimmed length, M= allTrimmedMoves, N=newPosition
-		
 		while (i--) {
 			t=U[i];
-			//N = z.setP(f,t,P,0); // Do not need to deal with promoting pawns, will not effect if my king is in check
-			N = this.setP(f,t,P,0); // Do not need to deal with promoting pawns, will not effect if my king is in check
+			N = this.setP(f,t,P); // Do not need to deal with promoting pawns, will not effect if my king is in check
 			k=this.kl(c,N);
 			if ( !this.aa(e,k,N) ) M.push(U[i])
 		}
 		return M
 	},
-	
-	//// misc functions:
 	cp:function(P,t) { // can promote // current position, moved to // used in ald() or ald2() I forget
 		var B=P.B, r=B[t], c=r>>4&1;
 		return (r&7)==1 && ( (!c&&t>>4==7)||(c&&t>>4==0) )
@@ -249,26 +209,9 @@ const ZX = {
 	
 	
 	
-	
-	
-	
-	wtf:function(position) {
-		var alive = position.A;
-		alive.forEach( function(side) {
-			side.forEach( function(type) {
-				type.forEach( function(piece) {
-					if (piece === null || typeof piece === "undefined") {
-						return "WTF:"+JSON.stringify(position)+";";
-					}
-				});
-			});
-		});
-		return null;
-	},
-	
 	/////////////////////////////////////
 
-	setP:function(f,t,P) { // set Position // return position json // from 0x88, to 0x88, (promote value Moved to setM) // move has already been determined to be legal, except for "possible" and "any" moves, but they are legal except don't consider checks
+	setP:function(f,t,P,z) { // set Position // return position json // from 0x88, to 0x88, (promote value Moved to setM) // move has already been determined to be legal, except for "possible" and "any" moves, but they are legal except don't consider checks
 	
 		//console.log('setP from:%s; to:%s; position:%s',f,t,P);
 		//console.log('P.A:'+P.A+';')
@@ -277,41 +220,14 @@ const ZX = {
 		//console.log('D:'+P.D+';')
 		//var i,j, h = P.h+1, k = P.k, e = 0, B = new ZX.OC(P.B), r = B[f], c = r>>4&1, v = r&7, M = [[f,t]], d=B[t], A= this.zxa(P.A), D= this.zxa(P.D),p=P.p+1;
 		var i,j, h = P.h+1, k = P.k, e = 0, B = this.Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], p=P.p+1;//, A= this.Ac(P.A), D= this.Dc(P.D);
-		//console.log('A[%s]:%s; v-1:%s;',c,A[c],v-1);
-		//console.log('A:'+A+';')
-		// position: {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]],m,s}
-// 		if (A[c] === null || A[c] === undefined) {
-// 			console.log('damn.');
-// 		}
-		//console.log('set1 P.A:'+P.A+'; new A:'+A+';');
-		//console.log('set1 P.D:'+P.D+'; new D:'+D+';');
-		//var A = [this.zxq(P.A[0]),this.zxq(P.A[1])];
-		//var D = [this.zxa(P.D[0]),this.zxa(P.D[1])];
-		
-
-		
-		//this.zxm(f,A[c][v-1],t); // move piece in piece array ... (contains piece locations)
-		
-
-
 		if (d) { // dead piece at "to" square, direct hit not en passant
 			//M[1]=[t,-1,d]; // add to move array // from, to, value
 			i = c^1; // dead piece color // same as d>>4&1
 			j = (d&7)-1; // dead piece value (shifted for array)
-			//if (d&8) D[i][0]++; // if promoted pawn then ++ dead pawn
-			//else D[i][j]++; // else ++ dead piece
-			
-			
-			//this.zxm(t,A[i][j]); // remove dead piece from piece array
-			
-
-			
 			h=0; // reset 50 move count
 		}
-	
 		B[t] = B[f]; // move piece to new square
 		delete B[f]; // empty old square
-	
 		switch (v) { // piece value
 			case 1: // pawns
 				h = 0; // reset 50 move count
@@ -321,12 +237,8 @@ const ZX = {
 					j=t-i; // enPassantKillSquare
 					//M[1] = [j,-1,B[j]]; //  from,to,value // add enPassant to move arrray
 					delete B[j] // delete from current board
-					
-					//this.zxm(j,A[c^1][0]); // delete from Alive array
-					
 				}
 				break;
-		
 			case 4: // rooks // NU SCHOOL from "tscp181" the chess program has optimized 0x88 castling array. modified to not use the array. Doesn't actually work, though...
 				if (c) {  // black
 					if (f==119) k &=11; // kingside // everything but 4
@@ -336,7 +248,6 @@ const ZX = {
 					if (f==0) k &=13 // queenside // everything but 2
 				}
 				break;
-		
 			case 6: // king
 				if (c) k &=3; // black
 				else k &=12;  // white
@@ -350,9 +261,6 @@ const ZX = {
 						j = f-1 // rook to
 					}
 					//M[1] = [i,j];//,B[j]]; // from,to (rook)
-					//console.log('castle move rook')
-					//console.log('castle move rook f:'+f+'; t:'+t+'; A:'+A+'; i:'+i+'; j:'+j+'; A[c][3]:'+A[c][3]+';');
-					//this.zxm(i,A[c][3],j); // move rook in alive pieces array
 					B[j] = B[i];
 					delete B[i]
 				}
@@ -365,66 +273,78 @@ const ZX = {
 	// Position:
 	// {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]]}
 	// Board,ply,kingcastling,enpassanttargetsquare,halfmove(fiftymove)count,zobrist,Alive,Dead
-
-		//return {B:B,p:p,k:k,e:e,h:h,z:z,M:M,A:A,D:D}
-		return {B:B,p:p,k:k,e:e,h:h,z:zo};//,A:A,D:D}
+		return {B:B,p:p,k:k,e:e,h:h,z:zo};
 	},
-// 	Ac:function(W) { // copy the Alive array // belongs in chess because it's specific.
-// 		var i=2,n,o,j,M=[[],[]];//M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
-// 		while (i--) { // colors 0,1
-// 			n=M[i];
-// 			o=W[i];
-// 			j=6;
-// 			while (j--) { // pieces
-// 				n[j]=o[j].slice();
-// 			}
-// 		}
-// 		return M;
-// 	},
-// 	// 414 calls, 5.01%, 41.359ms
-// 	Dc:function(W) { // copy the Dead array // belongs in chess because it's specific.
-// 		var M=[];//M=[[[],[],[],[],[],[]],[[],[],[],[],[],[]]];
-// 		//while (i--) { // colors 0,1
-// 			M[0]=W[0].slice();
-// 			M[1]=W[1].slice();
-// 		//}
-// 		return M;
-// 	},
-// 	// original was:
-// 	// 414 calls, 15.1%, 124.664ms
-// 
-// 	// new:
-// 	// 414 calls, 12.8%, 67.82ms
-// 	zxm:function(n,h,l) { // zx piece array move // needle, haystack, [new value (piece location)] // deletes at index or inserts optional new value
-// 		//console.log("zxm h:"+h+';')
-// 		if (!Array.isArray(h)) throw new Error("this is not an array:"+h);
-// 		var i = h.length;
-// 		while (i--) {
-// 			if (h[i]===n) {
-// 				if (typeof l === "undefined" || l === null) h.splice(i,1);
-// 				else h.splice(i,1,l);
-// 				return;
-// 			}
-// 		}
-// 		
-// 		console.log("zxm piece:%s; not found in:%s; insert:%s;",n,JSON.stringify(h),l);
-// 		return true;
-// 	},
-
 	Bc:function(w) { // board copy // this doesn't include generic object functions, does it?
 		var i,O={};
 		for (i in w) O[i] = w[i];
 		return O;
 	},
-
 	
-	
+// 	trim : function(w) {
+// 		return w.replace(/^\s+|\s+$/,"");
+// 	},
+	cv : function(s) { // convert // 0x88// number to letters .... remember long ago you had a problem when the number was actually a string
+		return "abcdefgh".charAt((s&7))+((s>>4)+1) //return "abcdefgh".charAt((s%8))+(((s>>3)-8)*-1)
+	},
+	vucv : function(j) { // VALIDATE unconvert // for user input, letters to number 0xx88 // used by fen import, anything else?
+		if (j.length==2 && j.charCodeAt(0)>96 && j.charCodeAt(0)<105 && j[1]*1 == j[1]) return this.ucv(j)
+		return -1;
+	},
+	ucv : function(j) {// unconvert // 0x88 // letters to number
+		return (j.charCodeAt(0)-97) + ((j.charAt(1)-1)*16)
+	},
+// 	zg : function(w){// zap gremlins. convert all funky spaces to regular, actually converts anything not ascii word, slash or dash.
+// 		return w.replace(/[^\w\/-]/g," ");
+// 		//rnbqk2r/pp2bppp/2p1pn2/2Pp4/1P1PP3/P1N2N2/1B3PPP/R2QKB1RÊwÊKQkqÊ-Ê3Ê10
+// 	}
 }
 
-export const isLegal = function(from, to, position) {
-	return ZX.il(from, to, position);
+// export const isLegal = function(move, position) { // This may not be the place for user friendly functions
+// 	//(typeof w == 'string' || w instanceof String)
+// 	if (position && move && (move.length === 4 || move.length === 5)) {
+// 		const from = ZX.vucv(move.substring(0,2));
+// 		const to = ZX.vucv(move.substring(2,4));
+// 		if (from !== -1 && to !== -1) {
+// 			if (move.length === 5) {
+// 				const promote = "nbrq".indexOf(move.substring(4,5));
+// 				if (promote !== -1) {
+// 				
+// 				}
+// 			}
+// 			return ZX.il(from, to, position);
+// 		}
+// 	}
+// }
+
+export const isLegal = function(f,t,P) {
+	return ZX.il(f,t,P);
 }
 
-export const allLegal = function(from, position) {
-	return ZX.al(from, position);
+export const allLegal = function(f,P) {
+	return ZX.al(f,P);
+}
+
+export const isUncheckedPieceMove = function(f,t,P) {
+	return ZX.ip(f,t,P);
+}
+
+export const calculateLegal = function(f,t,P) {
+	return ZX.cl(f,t,P);
+}
+
+export const isUncheckedPawnMove = function(f,t,P) {
+	return ZX.pm(f,t,P);
+}
+
+export const isCheck = function(P) {
+	return ZX.ic(P);
+}
+
+export const hasLegalMove = function(P) {
+	return ZX.hl(P);
+}
+
+export const isLegalCastling = function(f,t,P) {
+	return ZX.kc(f,t,P);
 }
