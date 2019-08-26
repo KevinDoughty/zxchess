@@ -90,60 +90,20 @@ const Game = {
 	
 	fen : function(fen) {
 		var F = this.trim(this.zg(fen)), a = F.split(/\s/g), x=0,t,k=0,h,n,e,p,B={},A=[    [  [],[],[],[],[],[]  ],[  [],[],[],[],[],[]  ]    ];
-	
-		//var TEMP = [];
-		//var i = 120; while (i--) {
-		//	TEMP[i] +=;
-		//}
-	
-		//var TEMP = "0123456789abcdefghijklmnopqrstuvwxyz",l=TEMP.length;
-		//var TEMP2 = ""
-		//for (var i=0;i<l;i++) {
-		//	TEMP2 += "_" + parseInt(TEMP.charAt(i),32);
-		//}
-		//console.log(TEMP2) //
-		// 35 //_0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_32_33_34_NaN
-		// 32 //_0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19_20_21_22_23_24_25_26_27_28_29_30_31_NaN_NaN_NaN_NaN
-	
-	
-		// 4,2,3,5,6,3,2,4,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,17,17,17,17,17,17,17,0,0,0,0,0,0,0,0,20,18,19,21,22,19,18,20
-
-
 		if (a.length==6) {
-			//console.log('a ok')
-			//if (!x && a[0].match(/[^pnbrqk\/1-8]/i)) return
 			var m = a[0].split(/\//) // fen board
 			if (m.length==8) {
-				//console.log('m ok')
-			
 				h = a[4]*1
 				n = a[5]*1
-			
 				if (a[3]=="-") e = 0
 				else e = this.vucv(a[3])
-			
-				// strict: (except KQkq order not imposed)
-				//if (a[0].match(/[^pnbrqk\/1-8]/i) console.log('match ok')
-				//if ("wb".indexOf(a[1])<0 ) console.log('wb ok')
-
 				if (a[0].match(/[^pnbrqk\/1-8]/i) || "wb".indexOf(a[1])<0 || (a[2]!="-" && a[2].match(/[^KQkq]/) ) || h!=a[4] || h<0 || n!=a[5] || n<0 || e<0) return
-			
-				//console.log('strict ok')
 				t = (a[1]=='b') ? 1:0
-			
 				if (a[2].indexOf("K")>=0) k += 1
 				if (a[2].indexOf("Q")>=0) k += 2
 				if (a[2].indexOf("k")>=0) k += 4
 				if (a[2].indexOf("q")>=0) k += 8
-			
-				//if (h<0) h=0 // not strict
-				//if (n<0) n=0 // not strict
-
 				p = (n-1)*2+t // ply / step
-			
-				//console.log('fen ply:'+p+';');
-			
-			
 				var v, c, q,f,r=0, w=0,b=0,i=8,j,l,N=0;
 				while (i--) { // not strict would probably need some checks here 
 					f = 0
@@ -159,52 +119,20 @@ const Game = {
 							B[q] = ((N++)<<5)+(c*16)+v // Now with NUMBERING // fen says nothing about promoted pawn. bfen & bpgn is different
 							A[c][v-1].push(q)
 							f++
-						
-							//TEMP[q]=(c*16)+v
-						
-						
-							/*
-							if ((match=[@"PNBRQK" rangeOfString:letter]).location != NSNotFound) { // white
-								pieceColor = 0;
-								pieceValue = match.location+1;
-								if (pieceValue == 6) whiteKingCount++;
-								newRawPiece = ((pieceColor*16)+pieceValue) + ((pieceNumber++)<<5);
-							} else if ((match=[@"pnbrqk" rangeOfString:letter]).location != NSNotFound) { // black
-								pieceColor = 1;
-								pieceValue = match.location+1;
-								if (pieceValue == 6) blackKingCount++;
-								newRawPiece = ((pieceColor*16)+pieceValue) + ((pieceNumber++)<<5);
-							} else {
-								if (verbose) NSLog(@"No piece match.");
-								newRawPiece = 0;
-							}
-							theBoard[(span + (abs(i-7)*16))] = newRawPiece;
-							span++;
-							*/
 						}
 					}
 					r++
 				}
-				//console.log('loop ok')
-		
-			} else return//x=1//THROW ERROR !!! improperly formatted fen
-		} else return//x=1// else THROW ERROR !!! improperly formatted fen
+			} else return // improperly formatted fen
+		} else return // improperly formatted fen
 		if (!w || !b) return // missing king
-	
-		//console.log(TEMP) // 4,2,3,5,6,3,2,4,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,17,17,17,17,17,17,17,0,0,0,0,0,0,0,0,20,18,19,21,22,19,18,20
 		var z = 0 // zobrist not done
-		//return {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[0,0,0,0,0,0],[0,0,0,0,0,0]]} // chess fen does not show dead or promoted pieces. I could make assumptions but fens with promoted pieces would show the wrong number of dead pieces.
-		return {B:B,p:p,k:k,e:e,h:h,z:z,M:[]};//,A:A,D:[[0,0,0,0,0,0],[0,0,0,0,0,0]]} // chess fen does not show dead or promoted pieces. I could make assumptions but fens with promoted pieces would show the wrong number of dead pieces.
+		return {B:B,p:p,k:k,e:e,h:h,z:z,M:[]};
 		// what about step/start offset ???
 		// that should be stored in the branch, shouldn't it?
 		// start offset is pure branch array info
 		// but FEN stores move, so ply should be included in position!
 	},
-	
-	
-	
-	///////////////////////////////////////
-	
 	
 	ncn : function(P,O) { // create notation // CHESS SPECIFIC !!! // P= current position after setM, O=previous position if disambiguation needed
 		// uses new crazy m bitwise shifted move representation
@@ -214,12 +142,7 @@ const Game = {
 		// but there are some savings by counting ip() in ctm()
 		//if (d) console.log('ncn da needed');
 		var N="  NBRQK",R="abcdefgh"; // internationalize !!!
-	
 		var m=P.m, r = m&31, v=r&7, f=m>>5&127, t=m>>12&127, u=m>>19&7, ch=m>>26&1, cm=m>>27&1, x=m>>22&1, e=m>>23&1,U='', L = N[v], X=(x||e)?"x":"", C="", D="", T;
-	
-	
-		//console.log('ncn m:'+m+'; r:'+r+'; v:'+v+'; f:'+f+'; t:'+t+'; u:'+u+';')
-	
 		T = this.cv(t);
 		if (cm) C="#";
 		else if (ch) C="+";
@@ -230,11 +153,8 @@ const Game = {
 			L=(x||e)?R[f&7]:'';
 			if (u) U='='+ N[u];
 		} else if (O) {
-			//console.log('ncn da needed')
 			D = this.da(O,f,t,r>>4&1,v);
 		}
-		//console.log('ncn:|'+L+'|'+D+'|'+X+'|'+T+'|'+U+'|'+C+'|;');
-		//ncn:||||e4|e||;
 		return L+D+X+T+U+C
 	},
 	
@@ -251,44 +171,24 @@ const Game = {
 		// ncn() in ctm() !!!
 		//console.log('DA')
 		var R="87654321", C="abcdefgh"; // internationalize !!!!
-		//var m=P.m, r=m&31, v=r&7, c=r>>4&1, f=m>>5&127, t=m>>12&127, A=P.A[c][v-1], i=A.length, L=[], x=0, y=0, fc=f&7, fr=f>>4;
 		var A=P.A[c][v-1], i=A.length, L=[], x=0, y=0, fc=f&7, fr=f>>4;
 		while (i--) {
 			if (A[i]!=f && this.il(A[i],t,P)) L.push(A[i]); // don't check piece that was moved (A[i]!=f)
 		}
-		//console.log('da L:'+L+';')
 		if (i=L.length) {
 			while (i--) {
-				//console.log('_'+(L[i]>>4)+'_'+(L[i]&7)+'_'+fc+'_'+fr+'_') // _4_3_2_5_
 				if ((L[i]>>4)==fr) y++
 				if ((L[i]&7)==fc) x++
 			}
-			//console.log('da x:'+x+'; y:'+y+';')
 			if (x&&y) return C[fc] + R[fr];
 			if (x) return R[fr];
 			return C[fc];
 		}
 		return ""; // da not needed.
-	
-		/*
-			var fc=f&7,fr=f>>4,c=0,r=0,dc="abcdefgh".charAt(fc),dr=fr+1,i=a.length
-			while (i--) {
-				if ((a[i]>>4)==fr) r++
-				if ((a[i]&7)==fc) c++
-			}
-			if (r&c) return dc+dr // & ?! single & ?!
-			if (c) return dr // if column is the same
-			return dc // if row is the same, or neither row nor column is the same
-		*/
 	}
 }
 
-
-// const exf = function(b,s) {
-// 	return this.exfa(this.B[b][s],this.G[b][s])
-// }
 export const exportFen = function(P) {//(B,G) {
-	//console.log("exportFen:%s;",JSON.stringify(P));
 	const B = P.B;
 	var e=0,l,k='',q,f='',h=P.p;
 	for (let r=7;r>-1;r--) {
@@ -311,28 +211,19 @@ export const exportFen = function(P) {//(B,G) {
 		}
 	}
 	if(e>0)f+=e
-	
-	//console.log("f:%s;",f);
-	
 	f+=' '+((h&1)?'b':'w')+' '
-	//console.log("f2:%s;",f);
 	const kc=P.k
 	if(kc&1)k+='K'
 	if(kc&2)k+='Q'
 	if(kc&4)k+='k'
 	if(kc&8)k+='q'
-
 	f+=((k=='')?'-':k)+' '
-	//console.log("f3:%s;",f);
-	
 	f+=((P.e)?this.cv(P.e):'-')+' '+P.h+' '+(Math.floor((h)/2)+1)
-	//console.log("f4:%s;",f);
-	
 	return f;
 }
 
 
-export const fen = function(string) {
+export const importFen = function(string) {
 	return Game.fen(string);
 }
 export const cv = Game.cv;

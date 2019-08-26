@@ -317,6 +317,37 @@ const ZX = {
 // 	}
 // }
 
+
+export function everyPossiblePosition(position) {
+	const board = position.B;
+	const result = [];
+	const squares = [];
+	for (let f in board) {
+		squares.push(f*1);
+		const moves = allLegal(f*1,position);
+		moves.forEach( move => {
+			const next = ZX.setP(f*1,move,position)
+			// manually handle promotion:
+			var r = board[f], c = r>>4&1, v = r&7;
+			if (v==1 && ((c==0&&(move>>4)==7)||(c==1&&(move>>4)==0))) {
+				//console.log("!!! c:%s; v:%s; f:%s; t:%s; shift:%s;",c,v,f,move,move>>4);
+				const rook = ZX.setP(f*1,move,position);
+				const bishop = ZX.setP(f*1,move,position);
+				const queen = ZX.setP(f*1,move,position);
+				next.B[move] = c*16+8+2; // update piece value, the 8 is the promoted flag
+				bishop.B[move] = c*16+8+3; // update piece value, the 8 is the promoted flag
+				rook.B[move] = c*16+8+4; // update piece value, the 8 is the promoted flag
+				queen.B[move] = c*16+8+5; // update piece value, the 8 is the promoted flag
+				result.push(queen);
+				result.push(rook);
+				result.push(bishop);
+			}
+			result.push(next);
+		});
+	}
+	return result;
+}
+
 export const isLegal = function(f,t,P) {
 	return ZX.il(f,t,P);
 }
