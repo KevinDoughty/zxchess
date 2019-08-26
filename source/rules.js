@@ -2,44 +2,33 @@
 // {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]]}
 // Board,ply,kingcastling,enpassanttargetsquare,halfmove(fiftymove)count,zobrist,Alive,Dead
 
-
 //rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 //{"B":{"0":4,"1":34,"2":67,"3":101,"4":134,"5":163,"6":194,"7":228,"16":257,"17":289,"18":321,"19":353,"20":385,"21":417,"22":449,"23":481,"96":529,"97":561,"98":593,"99":625,"100":657,"101":689,"102":721,"103":753,"112":788,"113":818,"114":851,"115":885,"116":918,"117":947,"118":978,"119":1012},
 //"p":0,"k":15,"e":0,"h":0,"z":0,"M":[]}
 
-
-//const ZX = {
-
-//ZX.R.fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-//return ZX.R.fen("k7/8/8/8/8/8/P7/K7 w KQkq - 0 1");
-
 const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0,0,0,0,0,48,0,0,0,0,0,40,0,0,0,0,40,0,0,0,0,48,0,0,0,0,40,0,0,0,0,0,0,40,0,0,0,48,0,0,0,40,0,0,0,0,0,0,0,0,40,0,0,48,0,0,40,0,0,0,0,0,0,0,0,0,0,40,4,48,4,40,0,0,0,0,0,0,0,0,0,0,0,4,104,112,104,4,0,0,0,0,0,0,48,48,48,48,48,48,112,0,112,48,48,48,48,48,48,0,0,0,0,0,0,4,104,112,104,4,0,0,0,0,0,0,0,0,0,0,0,40,4,48,4,40,0,0,0,0,0,0,0,0,0,0,40,0,0,48,0,0,40,0,0,0,0,0,0,0,0,40,0,0,0,48,0,0,0,40,0,0,0,0,0,0,40,0,0,0,0,48,0,0,0,0,40,0,0,0,0,40,0,0,0,0,0,48,0,0,0,0,0,40,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,0,0,0,0,0,0,0],
+
 	DeltaArray = [0,0,0,0,0,0,0,0,0,-17,0,0,0,0,0,0,-16,0,0,0,0,0,0,-15,0,0,-17,0,0,0,0,0,-16,0,0,0,0,0,-15,0,0,0,0,-17,0,0,0,0,-16,0,0,0,0,-15,0,0,0,0,0,0,-17,0,0,0,-16,0,0,0,-15,0,0,0,0,0,0,0,0,-17,0,0,-16,0,0,-15,0,0,0,0,0,0,0,0,0,0,-17,-33,-16,-31,-15,0,0,0,0,0,0,0,0,0,0,0,-18,-17,-16,-15,-14,0,0,0,0,0,0,-1,-1,-1,-1,-1,-1,-1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,14,15,16,17,18,0,0,0,0,0,0,0,0,0,0,0,15,31,16,33,17,0,0,0,0,0,0,0,0,0,0,15,0,0,16,0,0,17,0,0,0,0,0,0,0,0,15,0,0,0,16,0,0,0,17,0,0,0,0,0,0,15,0,0,0,0,16,0,0,0,0,17,0,0,0,0,15,0,0,0,0,0,16,0,0,0,0,0,17,0,0,15,0,0,0,0,0,0,16,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,0],
 
-	// first two intentionally left blank. move directions for piece value. there is no piece 0 and piece 1 is pawn, not used... but I could perhaps. color * value for pawn would make 0 for white, 1 for black, but still, too much specific logic required, like first move double push, en passant, takes legal, etc.
 	MoveArray = [ [1,16,15,17], [6,-16,-17,-15], [18, 33, 31, 14, -31, -33, -18, -14], [-15,-17,15,17], [-1,-16,1,16], [-15,-17,15,17,-1,-16,1,16] ],
+
 	il = function(f,t,P) { // is legal move (from, to, Position)
-		//console.log('is legal? f:'+f+'; t:'+t+'; P:'+P+';');
 		var c,p = P.p, h=p&1, B=P.B,r=B[f]; //color,ply,h=turn,Board,rawpiece
 		if (r) { // if piece exists at that square
 			c = r>>4&1;
-			//console.log('is legal turn:'+h+'; color:'+c+'; rawpiece:'+r+'; ply:'+p+';');
 			if (c == h && ip(f,t,P)) {
 				return cl(f,t,P); // return NEW POSITION
 			}
 		}
 	},
+
 	cl = function(f,t,P) { // calculate legal // (trim legal) move already determined to be a correct piece move & right turn, now test for check
 		var B=P.B, r=B[f], c=r>>4&1;
-		//console.log('legal create position')
-		//var N = setP(f,t,P), k = kl(c,N);
 		var N = setP(f,t,P), k = kl(c,N);
-		//console.log('end legal create position')
-		//return (!aa(c^1,k,N)) // return BOOL
-		if (!aa(c^1,k,N)) return N // return NEW POSITION !!!
+		if (!aa(c^1,k,N)) return N // return NEW POSITION
 	},
+
 	ip = function(f,t,P) { // is unchecked piece move (from, to, Position)
-		//console.log('ip f:'+f+'; t:'+t+';')
 		var B=P.B,r=B[f],v=r&7;
 		switch(v) {
 			case 1:
@@ -50,23 +39,25 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 		}
 		return ig(f,t,P)
 	},
+
 	pm = function(f,t,P) { // is unchecked pawn move
 		var B=P.B,r=B[f],c=r>>4&1,m = MoveArray[c],d=m[1];
 		if (t==f+d) return !B[t];
 		if (t==f+d+d) return f>>4==m[0] && !B[f+d] && !B[t]
-		//if (t==l || t==r) return !(t&0x88) && ( cc(c,t,B,1) || P.e==t ); // is 0x88 check needed here? I don't think so.
-		if (t==f+m[2] || t==f+m[3]) return cc(c,t,B,1) || P.e==t; // is 0x88 check needed here? I don't think so.
+		if (t==f+m[2] || t==f+m[3]) return cc(c,t,B,1) || P.e==t; // 0x88 check not needed
 	},
+
 	ik = function(f,t,P) { // is unchecked king regular move // split off of ip() because I thought pgn might need it... but I think I'm just going to call ip() from pgn.
 		var B=P.B, r=B[f], c=r>>4&1;
-		//return !(t&0x88) && AttackArray[t-f+128]>>v&1 && cc(c,t,B,0); // is 0x88 check needed here? I don't think so.
-		return AttackArray[t-f+128]>>6&1 && cc(c,t,B) // is 0x88 check needed here? I don't think so.
+		return AttackArray[t-f+128]>>6&1 && cc(c,t,B) // 0x88 check not needed
 	},
+
 	kc = function(f,t,P) { // is legal castle (from, to, Position)
-		var B=P.B, r=B[f], c=r>>4&1, e=c^1, x=f>t, d=x*-2+1, b=1<<x<<c*2;// x=type, d=direction,b=bitwiseshift //b=(1<<x)<<(c*2) // operator precedence?
+		var B=P.B, r=B[f], c=r>>4&1, e=c^1, x=f>t, d=x*-2+1, b=1<<x<<c*2;
 		if ( f!=c*112+4 || !(P.k&b) ) return;
 		return !(B[f+d] || B[t] || (x && B[f-3]) || aa(e,f,P) || aa(e,f+d,P) ) // "to" square is checked in trim.
 	},
+
 	kl = function(c,P) { // king loc (color,Position) // I might strip this out
 		var B = P.B, f;
 		for (f in B) {
@@ -74,12 +65,14 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 			if (C === c && v === 6) return f*1;
 		}
 	},
+
 	cc = function(C,t,B,p) { // check color (color,to,Board,ispawn)
 		var r=B[t], c=r>>4&1;
 		if (r) return C!=c;
 		return !p
 	},
-	aa = function(e,k,P) { // any piece is attacking(enemycolor,kingloc,Position)
+
+	aa = function(e,k,P) { // any piece is attacking (enemycolor,kingloc,Position)
 		var B=P.B,f;
 		for (f in B) {
 			var r = B[f], c = r>>4&1;
@@ -89,22 +82,23 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 		}
 		// return false implied
 	},
-	ia = function(f,t,P) { // is attacking (from, to, Position) // no more switch. speed is the same. this is shorter.
+
+	ia = function(f,t,P) { // is attacking (from, to, Position)
 		var B=P.B, r=B[f], v=r&7;
 		if (v===1) {// pawns. ep check not needed, for testing check.
 			var M=MoveArray[r>>4&1];
-			return (t===f+M[2] || t===f+M[3]); // is 0x88 check needed here? I don't think so.
+			return (t===f+M[2] || t===f+M[3]); // 0x88 check not needed
 		}
-		if (v===6) return !(t&0x88) && AttackArray[t-f+128]>>v&1 // operator precedence ?! // (AttackArray[t-f+128]>>v)&1
+		if (v===6) return !(t&0x88) && AttackArray[t-f+128]>>v&1
 		return ig(f,t,P) // doesn't need checkcolor in is legal generic move, but whatever...
 	},
+
 	ig = function(f,t,P) { // is legal generic move
 		var B=P.B, r=B[f], v=r&7, a=t-f+128, d; // attackArrayIndex, delta
-		if ( !(t&0x88) && AttackArray[a]>>v&1 ) { // operator precedence?! // ((AttackArray[a]>>v)&1)
+		if ( !(t&0x88) && AttackArray[a]>>v&1 ) {
 			d=DeltaArray[a];
 			f+=d;
 			if (f!=t) do {
-				//console.log("ig f:%s; t:%s; d:%s;",f,t,d);
 				if (B[f]) return;
 				f+=d
 			} while (f!=t);
@@ -112,18 +106,22 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 		}
 		// return false implied
 	},
+
 	// THESE SHOULD BE COMBINED. NO NEED TO CALC HAS ANY LEGAL MOVE SEVERAL TIMES.
 	ic = function(P) { // is check // called in setM() to determine check
 		var p = P.p, h=p&1, k=kl(h,P);
 		return aa(h^1,k,P)
 	},
+
 	im = function(P) { // is mate // not used
 		if ( !hl(P) ) return ic(P)
 		// return false implied
 	},
+
 	is = function(P) { // is stalemate // not used
 		if ( !hl(P) ) return !ic(P)
 	},
+
 	hl = function(P) { // has legal move // called in setM() to determine check
 		var B=P.B, h=P.p&1, f; // Boardarray, h=turn, rawpiece, A=alive pieces, current pieces, M=all moves
 		for (f in B) {
@@ -135,8 +133,9 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 		}
 		// return false implied
 	},
+
 	al = function(f,P) { // all legal squares (from, Position) // DOES NOT INCLUDE PROMOTION, not sufficient for perft
-		var B=P.B, r=B[f], c=r>>4&1, v=r&7, h=P.p&1, M; //Board, rawpiece, color, value, h=turn, M=allMoves
+		var B=P.B, r=B[f], c=r>>4&1, v=r&7, h=P.p&1, M; // Board, rawpiece, color, value, h=turn, M=allMoves
 		if (c==h) {
 			switch(v) {
 				case 6: // king
@@ -149,19 +148,21 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 					M = ag(f,P)
 			}
 			return tm(M,f,P) // trim !
-		}// else console.log('the color is wrong')
+		}
 		return []
 	},
+
 	ap = function(f,P) { // all unchecked pawn moves (from, Position)
-		var B=P.B, r=B[f], c=r>>4&1, U=[], M=MoveArray[c],d=M[1],l=f+M[2],r=f+M[3],e=P.e; // Board, rawpiece, color, U=allUntrimmedMoves (returned), M=pawn directions, d=direction(from M),l=left(from M),r=right(from M), e= ep target square (maybe I should use "n")
+		var B=P.B, r=B[f], c=r>>4&1, U=[], M=MoveArray[c],d=M[1],l=f+M[2],r=f+M[3],e=P.e; // Board, rawpiece, color, U=allUntrimmedMoves (returned), M=pawn directions, d=direction(from M),l=left(from M),r=right(from M), e= ep target square
 		if (!B[f+d]) {
 			U.push(f+d);
 			if (f>>4==M[0] && !B[f+d+d]) U.push(f+d+d)
 		}
-		if ( !(l&0x88) && ( cc(c,l,B,1) || l==e) ) U.push(l); // YES 0x88 check needed !!!
-		if ( !(r&0x88) && ( cc(c,r,B,1) || r==e) ) U.push(r); // YES 0x88 check needed !!!
+		if ( !(l&0x88) && ( cc(c,l,B,1) || l==e) ) U.push(l); // 0x88 check is needed
+		if ( !(r&0x88) && ( cc(c,r,B,1) || r==e) ) U.push(r); // 0x88 check is needed
 		return U
 	},
+
 	ak = function(f,P) { // all unchecked king moves (from, Position)
 		var B=P.B, r=B[f], c=r>>4&1, D=MoveArray[5], i=8, d,t,M=[]; // Board, rawpiece, color, value, D = piece Direction array (just using queen, it's the same, and do not confuse with Delta array), i = Direction length, d = individual direction, t= to square, M=allMoves
 		while (i--) {
@@ -173,8 +174,9 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 		if (kc(f,f-2,P) ) M.push(f-2);
 		return M
 	},
+
 	ag = function(f,P) {
-		var B=P.B, r=B[f], c=r>>4&1, v=r&7, D=MoveArray[v], t, d, i=D.length, M=[]; // Board, rawpiece, color, value, Directions array (NOT DELTA ARRAY), t=to square, d=individual delta, i = Directions array length, M=allUntrimmedMoves
+		var B=P.B, r=B[f], c=r>>4&1, v=r&7, D=MoveArray[v], t, d, i=D.length, M=[]; // Board, rawpiece, color, value, Directions (move array), t=to square, d=individual delta, i = move array length, M=allUntrimmedMoves
 		while (i--) {
 			d=D[i];
 			t=f+d;
@@ -186,6 +188,7 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 		}
 		return M
 	},
+
 	tm = function(U,f,P) { // trim moves (Untrimmed, from, Position)
 		var B=P.B, r=B[f], c=r>>4&1, e=c^1, k, t, i=U.length, M=[],N; // Board, rawpiece, color, enemycolor, kingloc, to, i=Untrimmed length, M= allTrimmedMoves, N=newPosition
 		while (i--) {
@@ -196,28 +199,15 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 		}
 		return M
 	},
-	cp = function(P,t) { // can promote // current position, moved to // used in ald() or ald2() I forget
+
+	cp = function(P,t) { // can promote // current position, moved to // used in ald() or ald2()
 		var B=P.B, r=B[t], c=r>>4&1;
 		return (r&7)==1 && ( (!c&&t>>4==7)||(c&&t>>4==0) )
 	},
 
-
-
-
-
-	/////////////////////////////////////
-
 	setP = function(f,t,P) { // set Position // return position json // from 0x88, to 0x88, (promote value Moved to setM) // move has already been determined to be legal, except for "possible" and "any" moves, but they are legal except don't consider checks
-
-		//console.log('setP from:%s; to:%s; position:%s',f,t,P);
-		//console.log('P.A:'+P.A+';')
-		// MOVES TAKEN OUT !!!
-		//console.log('A:'+P.A+';')
-		//console.log('D:'+P.D+';')
-		//var i,j, h = P.h+1, k = P.k, e = 0, B = new ZX.OC(P.B), r = B[f], c = r>>4&1, v = r&7, M = [[f,t]], d=B[t], A= zxa(P.A), D= zxa(P.D),p=P.p+1;
-		var i,j, h = P.h+1, k = P.k, e = 0, B = Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], p=P.p+1;//, A= Ac(P.A), D= Dc(P.D);
+		var i,j, h = P.h+1, k = P.k, e = 0, B = Bc(P.B), r = B[f], c = r>>4&1, v = r&7, d=B[t], p=P.p+1;
 		if (d) { // dead piece at "to" square, direct hit not en passant
-			//M[1]=[t,-1,d]; // add to move array // from, to, value
 			i = c^1; // dead piece color // same as d>>4&1
 			j = (d&7)-1; // dead piece value (shifted for array)
 			h=0; // reset 50 move count
@@ -231,11 +221,10 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 				if (t-f == i+i) e = f+i;
 				else if (t == P.e) {
 					j=t-i; // enPassantKillSquare
-					//M[1] = [j,-1,B[j]]; //  from,to,value // add enPassant to move arrray
 					delete B[j] // delete from current board
 				}
 				break;
-			case 4: // rooks // NU SCHOOL from "tscp181" the chess program has optimized 0x88 castling array. modified to not use the array. Doesn't actually work, though...
+			case 4: // rooks
 				if (c) {  // black
 					if (f==119) k &=11; // kingside // everything but 4
 					if (f==112) k &=7 // queenside // everything but 8
@@ -256,64 +245,41 @@ const AttackArray = [0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,48,0,0,0,0,0,0,40,0,0,40,0
 						i = f-4; // rook from
 						j = f-1 // rook to
 					}
-					//M[1] = [i,j];//,B[j]]; // from,to (rook)
 					B[j] = B[i];
 					delete B[i]
 				}
 		}
 
-		var zo = 0; // not done // calculate this in set2
-	// Tree:
-	//this.T = [{S:[{B:{}}],b:0,s:0}];
+		var zo = 0; // zobrist // not done // calculate in set2
 
-	// Position:
-	// {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]]}
-	// Board,ply,kingcastling,enpassanttargetsquare,halfmove(fiftymove)count,zobrist,Alive,Dead
+		// Tree:
+		//this.T = [{S:[{B:{}}],b:0,s:0}];
+
+		// Position:
+		// {B:B,p:p,k:k,e:e,h:h,z:z,M:[],A:A,D:[[],[]]}
+		// Board,ply,kingcastling,enpassanttargetsquare,halfmove(fiftymove)count,zobrist,Alive,Dead
+
 		return {B:B,p:p,k:k,e:e,h:h,z:zo};
 	},
-	Bc = function(w) { // board copy // this doesn't include generic object functions, does it?
+
+	Bc = function(w) { // board copy
 		var i,O={};
 		for (i in w) O[i] = w[i];
 		return O;
 	},
 
-// 	trim : function(w) {
-// 		return w.replace(/^\s+|\s+$/,"");
-// 	},
-	cv = function(s) { // convert // 0x88// number to letters .... remember long ago you had a problem when the number was actually a string
-		return "abcdefgh".charAt((s&7))+((s>>4)+1) //return "abcdefgh".charAt((s%8))+(((s>>3)-8)*-1)
+	cv = function(s) { // convert // 0x88// number to letters
+		return "abcdefgh".charAt((s&7))+((s>>4)+1)
 	},
-	vucv = function(j) { // VALIDATE unconvert // for user input, letters to number 0xx88 // used by fen import, anything else?
+
+	vucv = function(j) { // VALIDATE unconvert // for user input, letters to number 0xx88 // used by fen import
 		if (j.length==2 && j.charCodeAt(0)>96 && j.charCodeAt(0)<105 && j[1]*1 == j[1]) return ucv(j)
 		return -1;
 	},
+
 	ucv = function(j) {// unconvert // 0x88 // letters to number
 		return (j.charCodeAt(0)-97) + ((j.charAt(1)-1)*16)
 	};
-// 	zg : function(w){// zap gremlins. convert all funky spaces to regular, actually converts anything not ascii word, slash or dash.
-// 		return w.replace(/[^\w\/-]/g," ");
-// 		//rnbqk2r/pp2bppp/2p1pn2/2Pp4/1P1PP3/P1N2N2/1B3PPP/R2QKB1RÊwÊKQkqÊ-Ê3Ê10
-// 	}
-
-
-//}
-
-// export const isLegal = function(move, position) { // This may not be the place for user friendly functions
-// 	//(typeof w == 'string' || w instanceof String)
-// 	if (position && move && (move.length === 4 || move.length === 5)) {
-// 		const from = vucv(move.substring(0,2));
-// 		const to = vucv(move.substring(2,4));
-// 		if (from !== -1 && to !== -1) {
-// 			if (move.length === 5) {
-// 				const promote = "nbrq".indexOf(move.substring(4,5));
-// 				if (promote !== -1) {
-//
-// 				}
-// 			}
-// 			return il(from, to, position);
-// 		}
-// 	}
-// }
 
 
 export function everyPossiblePosition(position) {
@@ -325,10 +291,8 @@ export function everyPossiblePosition(position) {
 		const moves = allLegal(f*1,position);
 		moves.forEach( move => {
 			const next = setP(f*1,move,position)
-			// manually handle promotion:
 			var r = board[f], c = r>>4&1, v = r&7;
-			if (v==1 && ((c==0&&(move>>4)==7)||(c==1&&(move>>4)==0))) {
-				//console.log("!!! c:%s; v:%s; f:%s; t:%s; shift:%s;",c,v,f,move,move>>4);
+			if (v==1 && ((c==0&&(move>>4)==7)||(c==1&&(move>>4)==0))) { // manually handle promotion
 				const rook = setP(f*1,move,position);
 				const bishop = setP(f*1,move,position);
 				const queen = setP(f*1,move,position);
