@@ -1,10 +1,10 @@
 
 const Game = {
 	//////////////////////////////////////
-	
+
 	/*
-	
-	zxua : function(w) { // multi-dimensional array copy, not especially efficient
+
+	zxua : function(w) { // multi-dimensional array copy
 		var i;
 		if (i=w.length) {
 			var a=[];
@@ -13,8 +13,8 @@ const Game = {
 		}
 		return w
 	},
-	
-	zxa : function(w) { // multi-dimensional array copy, slightly more efficient, MUST be passed an array with NUMBERS not strings
+
+	zxa : function(w) { // multi-dimensional array copy, MUST be passed an array with NUMBERS not strings
 		if (w[0].length) {
 			var i=w.length,a=[];
 			while(i--) a[i] = this.zxa(w[i]);
@@ -35,12 +35,12 @@ const Game = {
 				return;
 			}
 		}
-		
+
 		console.log("zxm piece:%s; not found in:%s; insert:%s;",n,JSON.stringify(h),l);
 		return true;
 	},
-	
-	
+
+
 	trim : function(w) {
 		return w.replace(/^\s+|\s+$/,"");
 	},
@@ -61,7 +61,7 @@ const Game = {
 
 	/*
 	fen : function(fen) {
-		
+
 		var P = fenPos(fen)
 		if (P) {
 			this.T = [{S:[P],p:0,s:0}];
@@ -70,7 +70,7 @@ const Game = {
 			this.sub(P) // needs conditional check for php board !!!!!!!!
 		} else console.log ("fen failed for some reason");
 	},
-	
+
 	sub : function(P) {
 		var i,p,B=P.B
 		for (i in B) {
@@ -78,7 +78,7 @@ const Game = {
 			this.isp((p&16)>>4,(p&8)>>3,p&7,i*1) // initSinglePiece //  color, unpromote, value, location
 		}
 	},
-	
+
 	isp : function(c,u,v,l) { // WRONG //  color, unpromote, value, location
 		var L
 		if (l>-1) L=this.S[l].firstChild
@@ -87,7 +87,7 @@ const Game = {
 		this.P.push(p.p) // !!! wrong
 	},
 	*/
-	
+
 	fen : function(fen) {
 		var F = this.trim(this.zg(fen)), a = F.split(/\s/g), x=0,t,k=0,h,n,e,p,B={},A=[    [  [],[],[],[],[],[]  ],[  [],[],[],[],[],[]  ]    ];
 		if (a.length==6) {
@@ -105,11 +105,11 @@ const Game = {
 				if (a[2].indexOf("q")>=0) k += 8
 				p = (n-1)*2+t // ply / step
 				var v, c, q,f,r=0, w=0,b=0,i=8,j,l,N=0;
-				while (i--) { // not strict would probably need some checks here 
+				while (i--) { // not strict would probably need some checks here
 					f = 0
 					for (j=0;j<m[i].length;j++) {
 						l=m[i][j];
-						if (l*1==l) f += l*1 // 
+						if (l*1==l) f += l*1 //
 						else {
 							q=(f)+(r*16)
 							if (v=("PNBRQK".indexOf(l)+1)) c=0 // index is 0-5 not 1-6
@@ -133,7 +133,7 @@ const Game = {
 		// start offset is pure branch array info
 		// but FEN stores move, so ply should be included in position!
 	},
-	
+
 	ncn : function(P,O) { // create notation // CHESS SPECIFIC !!! // P= current position after setM, O=previous position if disambiguation needed
 		// uses new crazy m bitwise shifted move representation
 		// O = previous position if disambiguation needed.
@@ -157,8 +157,8 @@ const Game = {
 		}
 		return L+D+X+T+U+C
 	},
-	
-	
+
+
 	da : function(P,f,t,c,v) { // disambiguation // might be better placed elsewhere. probably rules.
 		// needs previous position.
 		// also, disambiguation is determined to be needed in ctm() !!! can I just calculate once ?!
