@@ -47,25 +47,6 @@ module.exports = [
 		},
 		plugins: plugins
 	},
-	// {
-	// 	entry: "./source/index.js",
-	// 	output: {
-	// 		path: __dirname + "/module/",
-	// 		filename: "zxchess.js"
-	// 	},
-	// 	module: {
-	// 		rules: [
-	// 			{
-	// 				test: /\.js$/,
-	// 				loader: "babel-loader",
-	// 				exclude: /node_modules/,
-	// 				//options: { presets: [ ["es2015", { modules: false }] ] } // .babelrc is different for mocha, so this is specified there.
-	//
-	// 			}
-	// 		]
-	// 	},
-	// 	plugins: plugins
-	// },
 	{
 	entry: "./example/index.js",
 	output: {
