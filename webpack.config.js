@@ -1,26 +1,6 @@
 var webpack = require("webpack");
 var path = require("path");
 
-// var modulesPlugins = [
-// 	new webpack.LoaderOptionsPlugin({ minimize: true }),
-// 	new webpack.optimize.UglifyJsPlugin({
-// 		compress: false,
-// 		mangle: false,
-// 		beautify: true,
-// 		comments: true,
-// 		sourceMap: true
-// 	})
-// ];
-// if (process.env.WEBPACK_ENV === "build") modulesPlugins = [
-// 	new webpack.LoaderOptionsPlugin({ minimize: true }),
-// 	new webpack.optimize.UglifyJsPlugin({
-// 		compress: true,
-// 		mangle: true,
-// 		beautify: false,
-// 		comments: false,
-// 		sourceMap: false
-// 	})
-// ];
 var plugins = [
 	new webpack.LoaderOptionsPlugin({ minimize: true }),
 ];
